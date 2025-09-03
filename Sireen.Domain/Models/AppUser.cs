@@ -15,5 +15,6 @@ namespace Sireen.Domain.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
         public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

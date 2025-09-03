@@ -19,6 +19,7 @@ namespace Sireen.Domain.Models
         DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         DateTime UpdatedAt { get; set; }
         public ICollection<HotelImage> HotelImages { get; set; } = new List<HotelImage>();
+        public ICollection<Room> Rooms { get; set; } = new List<Room>();
 
         [ForeignKey("Manager")]
         public int ManagerId { get; set; }
