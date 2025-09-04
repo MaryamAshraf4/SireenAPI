@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36202.13 d17.14
+VisualStudioVersion = 17.14.36202.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sireen.API", "Sireen.API\Sireen.API.csproj", "{DA660D98-E768-414C-96C3-1509A88537D6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6C326AB-5084-4B7C-86A5-11EB2B3F6EE5} = {D6C326AB-5084-4B7C-86A5-11EB2B3F6EE5}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sireen.Application", "Sireen.Application\Sireen.Application.csproj", "{27A3BA65-837F-4816-AAA2-62204A6CF038}"
 EndProject
