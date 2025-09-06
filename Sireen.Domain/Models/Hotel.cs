@@ -10,11 +10,11 @@ namespace Sireen.Domain.Models
     public class Hotel
     {
         int Id { get; set; }
-        string Name { get; set; }
-        string Location { get; set; }
-        string PhoneNumber { get; set; }
-        string Email { get; set; }
-        string Description { get; set; }
+        string Name { get; set; } = string.Empty;
+        string Location { get; set; } = string.Empty;
+        string PhoneNumber { get; set; } = string.Empty;
+        string Email { get; set; } = string.Empty;
+        string Description { get; set; } = string.Empty;
         bool IsDeleted { get; set; }
         DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         DateTime UpdatedAt { get; set; }

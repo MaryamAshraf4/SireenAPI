@@ -11,7 +11,7 @@ namespace Sireen.Domain.Models
     {
         public int Id { get; set; }
         public int Score { get; set; }
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("User")]
