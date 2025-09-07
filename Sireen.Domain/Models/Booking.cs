@@ -13,7 +13,7 @@ namespace Sireen.Domain.Models
         public int Id { get; set; }
         public BookingStatus BookingStatus { get; set; }
         DateTime CheckIn { get; set; } = DateTime.Now;
-        DateTime CheckOut { get; set; }
+        DateTime? CheckOut { get; set; }
         public bool IsDeleted { get; set; }
 
         [ForeignKey("Room")]

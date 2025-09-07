@@ -13,7 +13,7 @@ namespace Sireen.Domain.Models
         public string ImageUrl { get; set; } = string.Empty;
         public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         [ForeignKey("Hotel")]
         public int HotelId { get; set; }
