@@ -9,15 +9,15 @@ namespace Sireen.Domain.Models
 {
     public class Hotel
     {
-        int Id { get; set; }
-        string Name { get; set; } = string.Empty;
-        string Location { get; set; } = string.Empty;
-        string PhoneNumber { get; set; } = string.Empty;
-        string Email { get; set; } = string.Empty;
-        string Description { get; set; } = string.Empty;
-        bool IsDeleted { get; set; }
-        DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        DateTime UpdatedAt { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
         public ICollection<HotelImage> HotelImages { get; set; } = new List<HotelImage>();
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
 

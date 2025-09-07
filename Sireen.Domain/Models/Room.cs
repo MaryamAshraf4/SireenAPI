@@ -17,8 +17,8 @@ namespace Sireen.Domain.Models
         public double PricePerNight { get; set; }
         public RoomType RoomType { get; set; }
         public RoomStatus RoomStatus { get; set; }
-        DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
         public ICollection<RoomImage> RoomImages { get; set; } = new List<RoomImage>();
         public ICollection<Amenity> Amenities { get; set; } = new List<Amenity>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
