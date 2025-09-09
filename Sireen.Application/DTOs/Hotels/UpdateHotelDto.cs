@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Hotels
 {
-    public class HotelCreateDto
+    public class UpdateHotelDto
     {
         [Required(ErrorMessage = "Hotel name is required.")]
         public string Name { get; set; } = string.Empty;
@@ -26,5 +26,4 @@ namespace Sireen.Application.DTOs.Hotels
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
     }
-
 }
