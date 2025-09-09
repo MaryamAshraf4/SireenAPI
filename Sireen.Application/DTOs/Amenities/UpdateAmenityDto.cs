@@ -9,6 +9,7 @@ namespace Sireen.Application.DTOs.Amenities
 {
     public class UpdateAmenityDto
     {
+        [Required(ErrorMessage = "Amenity name is required.")]
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool IsFree { get; set; } = true;
