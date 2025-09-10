@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sireen.Application.DTOs.Amenities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace Sireen.Application.DTOs.Rooms
         public DateTime? UpdatedAt { get; set; }
 
         public List<string> RoomImages { get; set; } = new List<string>();
-        public List<string> Amenities { get; set; } = new List<string>();
+        public List<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
     }
 
 }

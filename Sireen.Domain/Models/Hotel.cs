@@ -23,7 +23,7 @@ namespace Sireen.Domain.Models
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
 
         [ForeignKey("Manager")]
-        public int ManagerId { get; set; }
+        public string ManagerId { get; set; }
         public AppUser Manager { get; set; }
     }
 }

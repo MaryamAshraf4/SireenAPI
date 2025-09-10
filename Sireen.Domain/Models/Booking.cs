@@ -21,7 +21,7 @@ namespace Sireen.Domain.Models
         public Room Room { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public AppUser User { get; set; }
 
         public Payment Payment { get; set; }
