@@ -1,24 +1,22 @@
-﻿using Sireen.Application.DTOs.AppUsers;
-using Sireen.Domain.Enums;
+﻿using Sireen.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Bookings
 {
-    public class ManagerBookingDto
+    public class CreateBookingDto
     {
-        public int Id { get; set; }
-        public int RoomNumber { get; set; }
-        public BookingStatus BookingStatus { get; set; }
+        [Required]
+        public int RoomId { get; set; }
+
+        [Required]
         DateTime CheckIn { get; set; } = DateTime.Now;
         DateTime? CheckOut { get; set; }
         public string? PaymentMethod { get; set; }
         public decimal? AmountPaid { get; set; }
-        public decimal TotalAmount { get; set; }
-
-        public ClientDto Client { get; set; } = new ClientDto();
     }
 }

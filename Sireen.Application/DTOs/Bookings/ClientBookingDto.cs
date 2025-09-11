@@ -18,6 +18,7 @@ namespace Sireen.Application.DTOs.Bookings
         DateTime CheckIn { get; set; } = DateTime.Now;
         DateTime? CheckOut { get; set; }
         public string? PaymentMethod { get; set; }
-        public decimal? Amount { get; set; }
+        public decimal? AmountPaid { get; set; }
+        public decimal TotalAmount { get; set; }
     }
 }
