@@ -13,7 +13,7 @@ namespace Sireen.Application.DTOs.Payments
         public double AmountPaid { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
-        DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
         public string RoomNumber { get; set; } = string.Empty;
         public DateTime CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }

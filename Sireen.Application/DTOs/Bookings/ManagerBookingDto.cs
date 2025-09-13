@@ -14,8 +14,8 @@ namespace Sireen.Application.DTOs.Bookings
         public int Id { get; set; }
         public int RoomNumber { get; set; }
         public BookingStatus BookingStatus { get; set; }
-        DateTime CheckIn { get; set; } = DateTime.Now;
-        DateTime? CheckOut { get; set; }
+        public DateTime CheckIn { get; set; } = DateTime.UtcNow;
+        public DateTime? CheckOut { get; set; }
         public decimal TotalAmount { get; set; }
         public PaymentDisplayForBookingDto? Payment { get; set; } = new PaymentDisplayForBookingDto();
         public ClientDto Client { get; set; } = new ClientDto();
