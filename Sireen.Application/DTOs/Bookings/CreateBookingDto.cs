@@ -1,4 +1,5 @@
-﻿using Sireen.Domain.Enums;
+﻿using Sireen.Application.DTOs.Payments;
+using Sireen.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,9 +15,8 @@ namespace Sireen.Application.DTOs.Bookings
         public int RoomId { get; set; }
 
         [Required]
-        DateTime CheckIn { get; set; } = DateTime.Now;
-        DateTime? CheckOut { get; set; }
-        public string? PaymentMethod { get; set; }
-        public decimal? AmountPaid { get; set; }
+        public DateTime CheckIn { get; set; } = DateTime.Now;
+        public DateTime? CheckOut { get; set; }
+        public CreatePaymentDto? PaymentCreate { get; set; } = new CreatePaymentDto();
     }
 }

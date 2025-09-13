@@ -1,4 +1,5 @@
 ﻿using Sireen.Application.DTOs.AppUsers;
+using Sireen.Application.DTOs.Payments;
 using Sireen.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,8 @@ namespace Sireen.Application.DTOs.Bookings
         public BookingStatus BookingStatus { get; set; }
         DateTime CheckIn { get; set; } = DateTime.Now;
         DateTime? CheckOut { get; set; }
-        public string? PaymentMethod { get; set; }
-        public decimal? AmountPaid { get; set; }
         public decimal TotalAmount { get; set; }
-
+        public PaymentDisplayForBookingDto? Payment { get; set; } = new PaymentDisplayForBookingDto();
         public ClientDto Client { get; set; } = new ClientDto();
     }
 }

@@ -12,7 +12,7 @@ namespace Sireen.Domain.Models
     {
         public int Id { get; set; }
         public BookingStatus BookingStatus { get; set; }
-        DateTime CheckIn { get; set; } = DateTime.Now;
+        DateTime CheckIn { get; set; } = DateTime.UtcNow;
         DateTime? CheckOut { get; set; }
         public bool IsDeleted { get; set; }
 
