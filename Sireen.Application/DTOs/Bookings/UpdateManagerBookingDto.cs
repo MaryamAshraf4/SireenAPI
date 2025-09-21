@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Bookings
 {
-    public class ClientUpdateBookingDto
+    public class UpdateManagerBookingDto
     {
+        [Required]
+        [EnumDataType(typeof(BookingStatus))]
+        public BookingStatus BookingStatus { get; set; } 
+
+        public DateTime? CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
 
-        [EnumDataType(typeof(BookingStatus))]
-        public BookingStatus? BookingStatus { get; set; }
+        public int? RoomId { get; set; }
     }
 }
