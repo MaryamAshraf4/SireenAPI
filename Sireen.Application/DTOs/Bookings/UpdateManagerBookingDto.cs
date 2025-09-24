@@ -10,7 +10,6 @@ namespace Sireen.Application.DTOs.Bookings
 {
     public class UpdateManagerBookingDto
     {
-        [Required]
         [EnumDataType(typeof(BookingStatus))]
         public BookingStatus BookingStatus { get; set; } 
 
