@@ -12,7 +12,7 @@ namespace Sireen.Application.DTOs.Payments
     public class CreatePaymentDto
     {
         [AmountPaidRequiredForImmediateMethodsAttribute]
-        public double AmountPaid { get; set; }
+        public decimal AmountPaid { get; set; }
 
         [Required(ErrorMessage = "Payment method is required")]
         public PaymentMethod PaymentMethod { get; set; }

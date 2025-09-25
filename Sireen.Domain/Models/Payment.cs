@@ -11,10 +11,10 @@ namespace Sireen.Domain.Models
     public class Payment
     {
         public int Id { get; set; }
-        public double AmountPaid { get; set; }
+        public decimal AmountPaid { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
-        DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("Booking")]
         public int BookingId { get; set; }
