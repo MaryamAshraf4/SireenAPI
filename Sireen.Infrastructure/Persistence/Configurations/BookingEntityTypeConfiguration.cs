@@ -13,6 +13,7 @@ namespace Sireen.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
+            builder.HasQueryFilter(b => !b.IsDeleted);
             builder.Property(b => b.BookingStatus).HasConversion<string>().IsRequired();
         }
     }
