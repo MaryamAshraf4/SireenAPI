@@ -14,6 +14,11 @@ namespace Sireen.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<RoomImage> builder)
         {
             builder.HasQueryFilter(r => !r.IsDeleted);
+
+            builder.HasOne(ri => ri.Room)
+                .WithMany(r => r.RoomImages)
+                .HasForeignKey(ri => ri.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

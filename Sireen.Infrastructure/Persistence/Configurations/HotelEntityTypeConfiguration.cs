@@ -19,6 +19,11 @@ namespace Sireen.Infrastructure.Persistence.Configurations
             builder.Property(h => h.PhoneNumber).HasMaxLength(20).IsRequired();
             builder.Property(h => h.Description).HasMaxLength(1000).IsRequired();
             builder.HasQueryFilter(h => !h.IsDeleted);
+
+            builder.HasOne(h => h.Manager)
+                .WithMany(m => m.Hotels)
+                .HasForeignKey(h => h.ManagerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

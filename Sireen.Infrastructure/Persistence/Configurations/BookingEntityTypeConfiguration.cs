@@ -15,6 +15,17 @@ namespace Sireen.Infrastructure.Persistence.Configurations
         {
             builder.HasQueryFilter(b => !b.IsDeleted);
             builder.Property(b => b.BookingStatus).HasConversion<string>().IsRequired();
+
+            builder.HasOne(b => b.Room)
+                .WithMany(r => r.Bookings)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(b => b.User)
+                   .WithMany(u => u.Bookings)
+                   .HasForeignKey(b => b.UserId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }

@@ -19,6 +19,11 @@ namespace Sireen.Infrastructure.Persistence.Configurations
             builder.Property(r => r.PricePerNight).HasColumnType("decimal(18,2)").IsRequired();
             builder.Property(r => r.RoomType).HasConversion<string>().IsRequired();
             builder.Property(r => r.RoomStatus).HasConversion<string>().IsRequired();
+
+            builder.HasOne(r => r.Hotel)
+                .WithMany(h => h.Rooms)
+                .HasForeignKey(r => r.HotelId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
