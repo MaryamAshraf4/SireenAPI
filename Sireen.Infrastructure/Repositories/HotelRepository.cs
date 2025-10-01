@@ -80,7 +80,7 @@ namespace Sireen.Infrastructure.Repositories
             
             existingHotel.Name = hotel.Name;
             existingHotel.Email = hotel.Email;
-            existingHotel.UpdatedAt = DateTime.Now;
+            existingHotel.UpdatedAt = DateTime.UtcNow;
             existingHotel.Location = hotel.Location;
             existingHotel.PhoneNumber = hotel.PhoneNumber;
             existingHotel.Description = hotel.Description;
