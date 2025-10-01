@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Bookings
 {
-    public class UpdateClientBookingDto
+    public class CancelBookingDto
     {
-        public DateTime? CheckOut { get; set; }
-
         [EnumDataType(typeof(BookingStatus))]
-        public BookingStatus? BookingStatus { get; set; }
+        public BookingStatus BookingStatus { get; set; } = BookingStatus.Cancelled;
     }
 }
