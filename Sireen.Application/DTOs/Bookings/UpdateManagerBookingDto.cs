@@ -11,7 +11,7 @@ namespace Sireen.Application.DTOs.Bookings
     public class UpdateManagerBookingDto
     {
         [EnumDataType(typeof(BookingStatus))]
-        public BookingStatus BookingStatus { get; set; } 
+        public BookingStatus? BookingStatus { get; set; } 
 
         public DateTime? CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
