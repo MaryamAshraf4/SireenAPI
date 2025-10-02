@@ -26,15 +26,7 @@ namespace Sireen.Infrastructure.Repositories
 
         public async Task<IEnumerable<Hotel>> GetAllAsync()
         {
-            return await _context.Hotels.Select(h => new Hotel
-            {
-                Id = h.Id,
-                Name = h.Name,
-                Location = h.Location,
-                Description = h.Description,
-                HotelImages = h.HotelImages.ToList()
-
-            }).ToListAsync();   
+            return await _context.Hotels.Include(h => h.HotelImages).ToListAsync();   
         }
 
         public async Task<Hotel?> GetByIdAsync(int id)

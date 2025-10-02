@@ -13,7 +13,6 @@ namespace Sireen.Domain.Interfaces
         Task<Booking?> GetByIdAsync(int id);
         Task<IEnumerable<Booking>> GetAllAsync();
         Task AddAsync(Booking booking);
-        Task UpdateAsync(Booking booking);
         Task SoftDeleteAsync(int id);
         Task<IEnumerable<Booking>> GetByUserIdAsync(string userId);
         Task<IEnumerable<Booking>> GetByRoomIdAsync(int roomId);

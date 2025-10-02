@@ -80,11 +80,6 @@ namespace Sireen.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateAsync(Booking booking)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task UpdateStatusAsync(int bookingId, BookingStatus status)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
