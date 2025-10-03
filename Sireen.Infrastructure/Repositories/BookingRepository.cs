@@ -67,7 +67,9 @@ namespace Sireen.Infrastructure.Repositories
 
         public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
         {
-            throw new NotImplementedException();
+            return !await _context.Bookings.AnyAsync(
+                b => b.RoomId == roomId && 
+                (checkIn < b.CheckOut && checkOut > b.CheckIn) || (b.CheckOut == null && checkOut > b.CheckIn) );
         }
 
         public async Task SoftDeleteAsync(int id)

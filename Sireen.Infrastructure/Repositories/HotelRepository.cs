@@ -63,19 +63,5 @@ namespace Sireen.Infrastructure.Repositories
                 hotel.IsDeleted = true;
             }
         }
-
-        public async Task UpdateAsync(Hotel hotel)
-        {
-            var existingHotel = await _context.Hotels.FindAsync(hotel.Id);
-
-            if (existingHotel is null) return;
-            
-            existingHotel.Name = hotel.Name;
-            existingHotel.Email = hotel.Email;
-            existingHotel.UpdatedAt = DateTime.UtcNow;
-            existingHotel.Location = hotel.Location;
-            existingHotel.PhoneNumber = hotel.PhoneNumber;
-            existingHotel.Description = hotel.Description;
-        }
     }
 }

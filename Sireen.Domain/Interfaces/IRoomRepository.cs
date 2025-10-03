@@ -10,7 +10,6 @@ namespace Sireen.Domain.Interfaces
     public interface IRoomRepository
     {
         Task AddAsync(Room room);
-        Task UpdateAsync(Room room);
         Task SoftDeleteAsync(int id);
         Task<Room?> GetByIdAsync(int id);
         Task<Room> SearchAsync(int? roomNumber);

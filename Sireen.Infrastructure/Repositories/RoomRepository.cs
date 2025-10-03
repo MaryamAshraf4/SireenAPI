@@ -47,18 +47,5 @@ namespace Sireen.Infrastructure.Repositories
                 room.IsDelete = true;
             }
         }
-
-        public async Task UpdateAsync(Room room)
-        {
-            var existingRoom = await _context.Rooms.FindAsync(room.ID);
-
-            if (existingRoom is null) return;
-
-            existingRoom.Capacity = room.Capacity;
-            existingRoom.PricePerNight = room.PricePerNight;
-            existingRoom.RoomStatus = room.RoomStatus;
-            existingRoom.RoomType = room.RoomType;
-            existingRoom.UpdatedAt = DateTime.UtcNow;
-        }
     }
 }
