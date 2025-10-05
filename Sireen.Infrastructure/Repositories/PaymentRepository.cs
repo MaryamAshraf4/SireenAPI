@@ -47,10 +47,10 @@ namespace Sireen.Infrastructure.Repositories
                 .ThenInclude(b => b.Room).ThenInclude(r => r.Hotel).Where(p => p.Booking.Room.HotelId == hotelId);
 
             if (startDate.HasValue)
-                query = query.Where(p => p.PaymentDate >= startDate.Value);
+                query = query.Where(p => p.PaymentDate >= startDate.Value.Date);
 
             if (endDate.HasValue)
-                query = query.Where(p => p.PaymentDate <= endDate.Value);
+                query = query.Where(p => p.PaymentDate <= endDate.Value.Date.AddDays(1));
 
             return await query.ToListAsync();
         }
