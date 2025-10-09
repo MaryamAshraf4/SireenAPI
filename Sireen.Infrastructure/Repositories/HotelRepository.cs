@@ -10,26 +10,17 @@ using System.Threading.Tasks;
 
 namespace Sireen.Infrastructure.Repositories
 {
-    public class HotelRepository : IHotelRepository
+    public class HotelRepository : GenericRepository<Hotel>, IHotelRepository
     {
-        private readonly AppDbContext _context;
 
-        public HotelRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task AddAsync(Hotel hotel)
-        {
-            await _context.Hotels.AddAsync(hotel);
-        }
+        public HotelRepository(AppDbContext context) : base(context) { }
 
         public async Task<IEnumerable<Hotel>> GetAllAsync()
         {
             return await _context.Hotels.Include(h => h.HotelImages).ToListAsync();   
         }
 
-        public async Task<Hotel?> GetByIdAsync(int id)
+        public override async Task<Hotel?> GetByIdAsync(int id)
         {
             return await _context.Hotels.Include(h => h.Rooms)
                 .Include(h => h.HotelImages).Include(h => h.Ratings)

@@ -10,19 +10,11 @@ using System.Threading.Tasks;
 
 namespace Sireen.Infrastructure.Repositories
 {
-    public class RoomRepository : IRoomRepository
+    public class RoomRepository : GenericRepository<Room>, IRoomRepository
     {
-        private readonly AppDbContext _context;
-        public RoomRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-        public async Task AddAsync(Room room)
-        {
-            await _context.Rooms.AddAsync(room);
-        }
+        public RoomRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Room?> GetByIdAsync(int id)
+        public override async Task<Room?> GetByIdAsync(int id)
         {
             return await _context.Rooms.Include(r => r.RoomImages)
                 .Include(r => r.Amenities).FirstOrDefaultAsync(r => r.ID == id);

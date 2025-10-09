@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace Sireen.Domain.Interfaces
 {
-    public interface IRoomRepository
+    public interface IRoomRepository : IGenericRepository<Room>
     {
-        Task AddAsync(Room room);
         Task SoftDeleteAsync(int id);
-        Task<Room?> GetByIdAsync(int id);
         Task<Room> SearchAsync(int? roomNumber);
         Task<IEnumerable<Room>> GetRoomsByHotelIdAsync(int hotelId);
     }

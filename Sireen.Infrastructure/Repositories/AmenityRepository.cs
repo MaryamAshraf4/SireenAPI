@@ -10,27 +10,13 @@ using System.Threading.Tasks;
 
 namespace Sireen.Infrastructure.Repositories
 {
-    public class AmenityRepository : IAmenityRepository
+    public class AmenityRepository : GenericRepository<Amenity>, IAmenityRepository
     {
-        private readonly AppDbContext _context;
-
-        public AmenityRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-        public async Task AddAsync(Amenity amenity)
-        {
-            await _context.Amenities.AddAsync(amenity);
-        }
+        public AmenityRepository(AppDbContext context) : base(context) { }
 
         public async Task<IEnumerable<Amenity>> GetAllAsync()
         {
             return await _context.Amenities.ToListAsync();
-        }
-
-        public async Task<Amenity?> GetByIdAsync(int id)
-        {
-            return await _context.Amenities.FindAsync(id);
         }
 
         public async Task<IEnumerable<Amenity>> GetByIdsAsync(IEnumerable<int> ids)

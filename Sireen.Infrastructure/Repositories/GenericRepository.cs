@@ -21,7 +21,7 @@ namespace Sireen.Infrastructure.Repositories
             await _context.Set<TEntity>().AddAsync(entity);
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public virtual async Task<TEntity?> GetByIdAsync(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }

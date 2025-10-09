@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace Sireen.Domain.Interfaces
 {
-    public interface IHotelRepository
+    public interface IHotelRepository : IGenericRepository<Hotel>
     {
-        Task<Hotel?> GetByIdAsync(int id);
         Task<IEnumerable<Hotel>> GetAllAsync();
-        Task AddAsync(Hotel hotel);
         Task SoftDeleteAsync(int id);
         Task<IEnumerable<Hotel>> GetHotelsByManagerIdAsync(string managerId);
         Task<IEnumerable<Hotel>> SearchAsync(string? name, string? location);

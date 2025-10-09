@@ -10,24 +10,16 @@ using System.Threading.Tasks;
 
 namespace Sireen.Infrastructure.Repositories
 {
-    public class PaymentRepository : IPaymentRepository
+    public class PaymentRepository : GenericRepository<Payment>, IPaymentRepository
     {
-        private readonly AppDbContext _context;
-        public PaymentRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-        public async Task AddAsync(Payment payment)
-        {
-            await _context.Payments.AddAsync(payment);
-        }
+        public PaymentRepository(AppDbContext context) : base(context) { }
 
         public async Task<IEnumerable<Payment>> GetByBookingIdAsync(int bookingId)
         {
             return await _context.Payments.Where(b => b.BookingId == bookingId).ToListAsync();
         }
 
-        public async Task<Payment?> GetByIdAsync(int id)
+        public override async Task<Payment?> GetByIdAsync(int id)
         {
             return await _context.Payments
                 .Include(p => p.Booking)

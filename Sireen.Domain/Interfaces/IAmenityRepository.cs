@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace Sireen.Domain.Interfaces
 {
-    public interface IAmenityRepository
+    public interface IAmenityRepository : IGenericRepository<Amenity>
     {  
-        Task AddAsync(Amenity amenity);
-        Task<Amenity?> GetByIdAsync(int id);
         Task<IEnumerable<Amenity>> GetAllAsync();
         Task<IEnumerable<Amenity>> GetByIdsAsync(IEnumerable<int> ids);
     }

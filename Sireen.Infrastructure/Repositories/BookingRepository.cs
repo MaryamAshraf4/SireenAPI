@@ -11,18 +11,9 @@ using System.Threading.Tasks;
 
 namespace Sireen.Infrastructure.Repositories
 {
-    public class BookingRepository : IBookingRepository
+    public class BookingRepository : GenericRepository<Booking>, IBookingRepository
     {
-        private readonly AppDbContext _context;
-        public BookingRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-        public async Task AddAsync(Booking booking)
-        {
-            await _context.Bookings.AddAsync(booking);
-        }
-
+        public BookingRepository(AppDbContext context) : base(context) { }
         public async Task CancelAsync(int bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
@@ -44,7 +35,7 @@ namespace Sireen.Infrastructure.Repositories
                 .Include(b => b.Payment).Include(b => b.Room).ToListAsync();
         }
 
-        public async Task<Booking?> GetByIdAsync(int id)
+        public override async Task<Booking?> GetByIdAsync(int id)
         {
             return await _context.Bookings.Include(b => b.User)
                 .Include(b => b.Room).FirstOrDefaultAsync(b => b.Id == id);

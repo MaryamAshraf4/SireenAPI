@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace Sireen.Domain.Interfaces
 {
-    public interface IBookingRepository
+    public interface IBookingRepository : IGenericRepository<Booking>
     {
-        Task<Booking?> GetByIdAsync(int id);
         Task<IEnumerable<Booking>> GetAllAsync();
-        Task AddAsync(Booking booking);
         Task SoftDeleteAsync(int id);
         Task<IEnumerable<Booking>> GetByUserIdAsync(string userId);
         Task<IEnumerable<Booking>> GetByRoomIdAsync(int roomId);
