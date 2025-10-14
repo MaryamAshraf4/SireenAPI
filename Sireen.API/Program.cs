@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Sireen.Domain.Interfaces;
 using Sireen.Infrastructure.Persistence;
+using Sireen.Infrastructure.UnitOfWork;
 
 string txt = "DevCors";
 
@@ -24,6 +26,8 @@ builder.Services.AddCors( option =>
             builder.AllowAnyHeader();
         });
 });
+
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 var app = builder.Build();
 
