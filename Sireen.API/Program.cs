@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Sireen.Application.Interfaces.Services;
+using Sireen.Application.Services;
+using Sireen.Domain.Interfaces.Services;
 using Sireen.Domain.Interfaces.UnitOfWork;
+using Sireen.Domain.Models;
 using Sireen.Infrastructure.Persistence;
 using Sireen.Infrastructure.UnitOfWork;
 
@@ -27,7 +32,11 @@ builder.Services.AddCors( option =>
         });
 });
 
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.AddScoped<IRoleService,RoleService>();
+builder.Services.AddScoped<IAppUserService,AppUserService>();
 
 var app = builder.Build();
 

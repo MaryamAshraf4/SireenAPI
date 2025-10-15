@@ -11,6 +11,6 @@ namespace Sireen.Domain.Interfaces.Services
     public interface IAppUserService
     {
         Task<ServiceResult> RegisterUserAsync(CreateAppUserDto userDto);
-        Task<ServiceResult> UpdateUserAsync(string userId, UpdateAppUserDto userDto);
+        //Task<ServiceResult> UpdateUserAsync(string userId, UpdateAppUserDto userDto);
     }
 }
