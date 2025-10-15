@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sireen.Domain.Interfaces
+namespace Sireen.Domain.Interfaces.Repository
 {
     public interface IRoomImageRepository : IGenericRepository<RoomImage>
     {

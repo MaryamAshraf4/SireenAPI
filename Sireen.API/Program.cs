@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Sireen.Domain.Interfaces;
+using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Infrastructure.Persistence;
 using Sireen.Infrastructure.UnitOfWork;
 

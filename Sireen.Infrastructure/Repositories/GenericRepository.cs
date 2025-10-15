@@ -1,4 +1,4 @@
-﻿using Sireen.Domain.Interfaces;
+﻿using Sireen.Domain.Interfaces.Repository;
 using Sireen.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;

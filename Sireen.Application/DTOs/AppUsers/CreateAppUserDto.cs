@@ -39,7 +39,7 @@ namespace Sireen.Application.DTOs.AppUsers
 
         [DataType(DataType.Password)]
         [Required]
-        [Compare("Password")]
+        [Compare("Password",ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

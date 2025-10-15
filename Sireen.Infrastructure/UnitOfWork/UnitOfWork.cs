@@ -1,4 +1,5 @@
-﻿using Sireen.Domain.Interfaces;
+﻿using Sireen.Domain.Interfaces.Repository;
+using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Infrastructure.Persistence;
 using Sireen.Infrastructure.Repositories;
 using System;
