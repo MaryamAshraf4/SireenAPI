@@ -24,6 +24,7 @@ namespace Sireen.Application.Services
             {
                 Email = userDto.Email,
                 FullName = userDto.FullName,
+                UserName = userDto.UserName,
                 Nationality = userDto.Nationality,
                 PhoneNumber = userDto.PhoneNumber,
                 IdentityType = userDto.IdentityType,

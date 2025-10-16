@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Sireen.Domain.Enums;
-using Sireen.Domain.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

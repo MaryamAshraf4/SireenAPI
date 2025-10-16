@@ -1,4 +1,5 @@
-﻿using Sireen.Domain.Enums;
+﻿using Sireen.Application.DTOs.AppUsers;
+using Sireen.Domain.Enums;
 using Sireen.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Sireen.Domain.Validations
+namespace Sireen.Application.Validations
 {
     public class IdentityNumberValidation : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext) 
         {
-            var user = (AppUser) validationContext.ObjectInstance;
+            var user = (CreateAppUserDto) validationContext.ObjectInstance;
             var identityNumber = value as string;
             if( user.IdentityType == IdentityType.NationalId) 
             {

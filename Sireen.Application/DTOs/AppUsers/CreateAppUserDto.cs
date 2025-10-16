@@ -1,5 +1,5 @@
 ﻿using Sireen.Domain.Enums;
-using Sireen.Domain.Validations;
+using Sireen.Application.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,6 +14,9 @@ namespace Sireen.Application.DTOs.AppUsers
         [Required(ErrorMessage = "Full Name is required.")]
         [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "Full Name must contain only letters (Arabic or English).")]
         public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "User Name is required.")]
+        public string UserName { get; set; } = string.Empty;
         public IdentityType IdentityType { get; set; }
 
         [Required(ErrorMessage = "Identity Number is required.")]

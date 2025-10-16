@@ -1,5 +1,5 @@
 ﻿using Sireen.Domain.Enums;
-using Sireen.Domain.Validations;
+using Sireen.Application.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
