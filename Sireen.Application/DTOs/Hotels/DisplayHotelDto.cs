@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Hotels
 {
-    public class HotelDto
+    public class DisplayHotelDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -15,6 +15,11 @@ namespace Sireen.Application.DTOs.Hotels
         public string PhoneNumber { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Description { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
         public List<string> HotelImages { get; set; } = new List<string>();
+        public List<RoomDto> Rooms { get; set; } = new List<RoomDto>();
     }
 }

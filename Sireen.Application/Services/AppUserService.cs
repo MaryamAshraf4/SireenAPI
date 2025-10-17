@@ -25,10 +25,11 @@ namespace Sireen.Application.Services
                 Email = userDto.Email,
                 FullName = userDto.FullName,
                 UserName = userDto.UserName,
+                CreatedAt = DateTime.UtcNow,
                 Nationality = userDto.Nationality,
                 PhoneNumber = userDto.PhoneNumber,
                 IdentityType = userDto.IdentityType,
-                IdentityNumber = userDto.IdentityNumber,
+                IdentityNumber = userDto.IdentityNumber,              
                 IdentityExpiryDate = userDto.IdentityExpiryDate
             };
 

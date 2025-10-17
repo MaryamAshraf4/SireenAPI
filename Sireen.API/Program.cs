@@ -37,6 +37,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<A
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 builder.Services.AddScoped<IRoleService,RoleService>();
 builder.Services.AddScoped<IAppUserService,AppUserService>();
+builder.Services.AddScoped<IHotelService,HotelService>();
 
 var app = builder.Build();
 
