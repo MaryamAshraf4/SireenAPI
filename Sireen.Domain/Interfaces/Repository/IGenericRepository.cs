@@ -10,5 +10,6 @@ namespace Sireen.Domain.Interfaces.Repository
     {
         Task<TEntity?> GetByIdAsync(int id);
         Task AddAsync(TEntity entity);
+        void Update(TEntity entity);
     }
 }

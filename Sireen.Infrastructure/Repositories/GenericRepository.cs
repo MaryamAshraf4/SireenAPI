@@ -25,5 +25,10 @@ namespace Sireen.Infrastructure.Repositories
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }
+
+        public void Update(TEntity entity)
+        {
+            _context.Set<TEntity>().Update(entity);
+        }
     }
 }

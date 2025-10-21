@@ -29,7 +29,7 @@ namespace Sireen.Infrastructure.Repositories
 
         public async Task<IEnumerable<Hotel>> GetHotelsByManagerIdAsync(string managerId)
         {
-            return await _context.Hotels.Where(h => h.ManagerId == managerId).ToListAsync();
+            return await _context.Hotels.Include(h => h.HotelImages).Where(h => h.ManagerId == managerId).ToListAsync();
         }
 
         public async Task<IEnumerable<Hotel>> SearchAsync(string? name, string? location)
@@ -43,16 +43,6 @@ namespace Sireen.Infrastructure.Repositories
                 query = query.Where(h => h.Location.Contains(location));
 
             return await query.ToListAsync();
-        }
-
-        public async Task SoftDeleteAsync(int id)
-        {
-            var hotel = await _context.Hotels.FindAsync(id);
-
-            if(hotel != null)
-            {
-                hotel.IsDeleted = true;
-            }
         }
     }
 }
