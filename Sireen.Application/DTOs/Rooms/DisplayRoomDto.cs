@@ -19,7 +19,7 @@ namespace Sireen.Application.DTOs.Rooms
         public DateTime? UpdatedAt { get; set; }
 
         public List<string> RoomImages { get; set; } = new List<string>();
-        public List<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
+        public List<DisplayAmenityDto> Amenities { get; set; } = new List<DisplayAmenityDto>();
     }
 
 }
