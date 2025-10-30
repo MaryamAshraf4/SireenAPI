@@ -20,11 +20,8 @@ namespace Sireen.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ServiceResult> AddAsync(CreateHotelDto hotelDto)
+        public async Task<ServiceResult> AddAsync(CreateHotelDto hotelDto, string managerId)
         {
-            if (hotelDto == null)
-                return ServiceResult.FailureResult("Invalid hotel data.");
-
             var hotel = new Hotel
             {
                 IsDeleted = false,
@@ -33,7 +30,8 @@ namespace Sireen.Application.Services
                 Location = hotelDto.Location,
                 CreatedAt = DateTime.UtcNow,
                 PhoneNumber = hotelDto.PhoneNumber,              
-                Description = hotelDto.Description
+                Description = hotelDto.Description,
+                ManagerId = managerId
             };
 
             await _unitOfWork.Hotels.AddAsync(hotel);
@@ -140,6 +138,7 @@ namespace Sireen.Application.Services
         public async Task<ServiceResult> UpdateHotelAsync(int hotelId, UpdateHotelDto hotelDto)
         {
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
+
             if (hotel == null)
                 return ServiceResult.FailureResult("Hotel not found.");
 

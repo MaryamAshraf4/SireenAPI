@@ -10,7 +10,7 @@ namespace Sireen.Application.Interfaces.Services
 {
     public interface IHotelService
     {
-        Task<ServiceResult> AddAsync(CreateHotelDto hotelDto);
+        Task<ServiceResult> AddAsync(CreateHotelDto hotelDto, string managerId);
         Task<IEnumerable<HotelDto>> GetAllAsync();
         Task<DisplayHotelDto?> GetByIdAsync(int id);
         Task<IEnumerable<HotelDto>> SearchAsync(string? name, string? location);
