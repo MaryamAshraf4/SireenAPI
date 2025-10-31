@@ -15,8 +15,6 @@ namespace Sireen.Application.Interfaces.Services
         Task<ServiceResult> AddAsync(CreateAmenityDto amenityDto);
         Task<IEnumerable<AmenityDto>> GetAllAsync();
         Task<DisplayAmenityDto?> GetByIdAsync(int id);
-        Task<IEnumerable<AmenityDto>> GetByIdsAsync(IEnumerable<int> ids);
         Task<ServiceResult> UpdateAmenityAsync(int amenitylId, UpdateAmenityDto amenityDto);
-
     }
 }

@@ -38,6 +38,7 @@ builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 builder.Services.AddScoped<IRoleService,RoleService>();
 builder.Services.AddScoped<IAppUserService,AppUserService>();
 builder.Services.AddScoped<IHotelService,HotelService>();
+builder.Services.AddScoped<IAmenityService, AmenityService>();
 
 var app = builder.Build();
 

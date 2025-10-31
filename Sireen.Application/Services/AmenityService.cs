@@ -22,9 +22,9 @@ namespace Sireen.Application.Services
         public async Task<ServiceResult> AddAsync(CreateAmenityDto amenityDto)
         {
             var amenity = new Amenity
-            {
-                IsFree = true,
+            {             
                 Name = amenityDto.Name,
+                IsFree = amenityDto.IsFree,
                 Description = amenityDto.Description
             };
 
@@ -59,17 +59,6 @@ namespace Sireen.Application.Services
                 Name = amenity.Name,
                 Description = amenity.Description
             };
-        }
-
-        public async Task<IEnumerable<AmenityDto>> GetByIdsAsync(IEnumerable<int> ids)
-        {
-            var amenities = await _unitOfWork.Amenities.GetByIdsAsync(ids);
-
-            return amenities.Select(a => new AmenityDto
-            {
-                Id = a.Id,
-                Name = a.Name
-            }).ToList();
         }
 
         public async Task<ServiceResult> UpdateAmenityAsync(int amenitylId, UpdateAmenityDto amenityDto)
