@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sireen.Application.DTOs.Ratings
 {
-    public class RatingDto
+    public class HotelRatingDto
     {
         public int Id { get; set; }
         public int Score { get; set; }
