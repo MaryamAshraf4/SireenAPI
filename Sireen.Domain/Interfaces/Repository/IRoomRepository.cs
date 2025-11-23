@@ -9,7 +9,7 @@ namespace Sireen.Domain.Interfaces.Repository
 {
     public interface IRoomRepository : IGenericRepository<Room>
     {
-        Task SoftDeleteAsync(int id);
+        Task<IEnumerable<Room>> GetAllAsync();
         Task<Room> SearchAsync(int? roomNumber);
         Task<IEnumerable<Room>> GetRoomsByHotelIdAsync(int hotelId);
     }

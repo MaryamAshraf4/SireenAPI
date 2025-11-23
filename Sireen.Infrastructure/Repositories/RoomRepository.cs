@@ -14,6 +14,11 @@ namespace Sireen.Infrastructure.Repositories
     {
         public RoomRepository(AppDbContext context) : base(context) { }
 
+        public async Task<IEnumerable<Room>> GetAllAsync()
+        {
+            return await _context.Rooms.Include(r => r.RoomImages).ToListAsync();
+        }
+
         public override async Task<Room?> GetByIdAsync(int id)
         {
             return await _context.Rooms.Include(r => r.RoomImages)
@@ -28,16 +33,6 @@ namespace Sireen.Infrastructure.Repositories
         public async Task<Room> SearchAsync(int? roomNumber)
         {
             return await _context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == roomNumber);
-        }
-
-        public async Task SoftDeleteAsync(int id)
-        {
-            var room = await _context.Rooms.FindAsync(id);
-
-            if(room != null)
-            {
-                room.IsDelete = true;
-            }
         }
     }
 }
