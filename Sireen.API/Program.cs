@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAppUserService,AppUserService>();
 builder.Services.AddScoped<IHotelService,HotelService>();
 builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 var app = builder.Build();
 

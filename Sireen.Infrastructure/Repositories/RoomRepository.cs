@@ -30,9 +30,9 @@ namespace Sireen.Infrastructure.Repositories
             return await _context.Rooms.Where(r => r.HotelId == hotelId).ToListAsync();
         }
 
-        public async Task<Room> SearchAsync(int? roomNumber)
+        public async Task<Room> SearchAsync(int? roomNumber, int hotelId)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == roomNumber);
+            return await _context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == roomNumber && r.HotelId == hotelId);
         }
     }
 }

@@ -99,9 +99,9 @@ namespace Sireen.Application.Services
             }).ToList();
         }
 
-        public async Task<RoomDto> SearchAsync(int? roomNumber)
+        public async Task<RoomDto> SearchAsync(int? roomNumber, int hotelId)
         {
-            var room = await _unitOfWork.Rooms.SearchAsync(roomNumber);
+            var room = await _unitOfWork.Rooms.SearchAsync(roomNumber, hotelId);
 
             return new RoomDto
             {
