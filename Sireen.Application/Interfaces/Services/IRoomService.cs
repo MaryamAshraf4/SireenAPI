@@ -19,5 +19,7 @@ namespace Sireen.Application.Interfaces.Services
         Task<IEnumerable<RoomDto>> GetRoomsByHotelIdAsync(int hotelId);
         Task<ServiceResult> AddAsync(CreateRoomDto roomDto, int hotelId);
         Task<ServiceResult> UpdateRoomAsync(int roomId, UpdateRoomDto roomDto);
+        Task<ServiceResult> AddAmenityToRoomAsync(int roomId, int amenityId);
+        Task<ServiceResult> RemoveAmenityFromRoomAsync(int roomId, int amenityId);
     }
 }

@@ -22,6 +22,48 @@ namespace Sireen.Application.Services
         {
             _unitOfWork = unitOfWork;
         }
+
+        public async Task<ServiceResult> AddAmenityToRoomAsync(int roomId, int amenityId)
+        {
+            var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+            if (room == null || room.IsDelete)
+                return ServiceResult.FailureResult("Room not found.");
+
+            var amenity = await _unitOfWork.Amenities.GetByIdAsync(amenityId);
+            if (amenity == null)
+                return ServiceResult.FailureResult("Amenity not found.");
+
+            if (room.Amenities.Any(a => a.Id == amenityId))
+                return ServiceResult.FailureResult("Amenity already added to this room.");
+
+            room.Amenities.Add(amenity);
+            room.UpdatedAt = DateTime.UtcNow;
+
+            _unitOfWork.Rooms.Update(room);
+            await _unitOfWork.SaveChangeAsync();
+
+            return ServiceResult.SuccessResult("Amenity added to room successfully.");
+        }
+
+        public async Task<ServiceResult> RemoveAmenityFromRoomAsync(int roomId, int amenityId)
+        {
+            var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+            if (room == null || room.IsDelete)
+                return ServiceResult.FailureResult("Room not found.");
+
+            var amenity = room.Amenities.FirstOrDefault(a => a.Id == amenityId);
+            if (amenity == null)
+                return ServiceResult.FailureResult("Amenity not found in this room.");
+
+            room.Amenities.Remove(amenity);
+            room.UpdatedAt = DateTime.UtcNow;
+
+            _unitOfWork.Rooms.Update(room);
+            await _unitOfWork.SaveChangeAsync();
+
+            return ServiceResult.SuccessResult("Amenity removed from room successfully.");
+        }
+
         public async Task<ServiceResult> AddAsync(CreateRoomDto roomDto, int hotelId)
         {
             var room = new Room

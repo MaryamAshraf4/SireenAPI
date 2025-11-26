@@ -92,5 +92,26 @@ namespace Sireen.API.Controllers
 
             return Ok(result.Message);
         }
+
+        [HttpPost("{roomId}/amenities/{amenityId}")]
+        public async Task<IActionResult> AddAmenityToRoom(int roomId, int amenityId)
+        {
+            var result = await _roomService.AddAmenityToRoomAsync(roomId, amenityId);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
+        [HttpDelete("{roomId}/amenities/{amenityId}")]
+        public async Task<IActionResult> RemoveAmenityFromRoom(int roomId, int amenityId)
+        {
+            var result = await _roomService.RemoveAmenityFromRoomAsync(roomId, amenityId);
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
     }
 }
