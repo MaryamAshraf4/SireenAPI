@@ -16,7 +16,6 @@ namespace Sireen.Application.DTOs.AppUsers
         public IdentityType? IdentityType { get; set; }
 
         [MaxLength(20)]
-        [IdentityNumberValidation]
         public string? IdentityNumber { get; set; } 
         public string? Nationality { get; set; }
         public DateTime? IdentityExpiryDate { get; set; }

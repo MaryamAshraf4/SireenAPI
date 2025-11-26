@@ -64,12 +64,12 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateHotel(int id, [FromBody] UpdateRoomDto roomDto)
+        public async Task<IActionResult> UpdateRoom(int id, [FromBody] UpdateRoomDto roomDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _roomService.UpdateHotelAsync(id, roomDto);
+            var result = await _roomService.UpdateRoomAsync(id, roomDto);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -79,7 +79,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteHotel(int id)
+        public async Task<IActionResult> DeleteRoom(int id)
         {
             var result = await _roomService.SoftDeleteAsync(id);
             if (!result.Success)

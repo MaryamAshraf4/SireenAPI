@@ -133,7 +133,7 @@ namespace Sireen.Application.Services
             return ServiceResult.SuccessResult("Room deleted successfully.");
         }
 
-        public async Task<ServiceResult> UpdateHotelAsync(int roomId, UpdateRoomDto roomDto)
+        public async Task<ServiceResult> UpdateRoomAsync(int roomId, UpdateRoomDto roomDto)
         {
             var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
 

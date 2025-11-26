@@ -22,7 +22,7 @@ namespace Sireen.Application.DTOs.AppUsers
         public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
-        public List<string> HotelNames { get; set; } = new List<string>();
-        public List<ClientBookingDto> ClientBookings { get; set; } = new List<ClientBookingDto>();
+        //public List<string> HotelNames { get; set; } = new List<string>();
+        //public List<ClientBookingDto> ClientBookings { get; set; } = new List<ClientBookingDto>();
     }
 }
