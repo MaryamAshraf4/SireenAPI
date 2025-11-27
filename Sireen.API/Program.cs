@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Sireen.API.Interfaces.IService;
+using Sireen.API.Service;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Application.Services;
 using Sireen.Domain.Interfaces.Services;
@@ -41,6 +43,9 @@ builder.Services.AddScoped<IHotelService,HotelService>();
 builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IRoomImageService, RoomImageService>();
+builder.Services.AddScoped<IHotelImageService, HotelImageService>();
 
 var app = builder.Build();
 

@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Sireen.API.DTOs.HotelImages;
+using Sireen.API.DTOs.RoomImages;
+using Sireen.API.Interfaces.IService;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.Interfaces.Services;
 using System.Security.Claims;
@@ -11,9 +14,11 @@ namespace Sireen.API.Controllers
     public class HotelController : ControllerBase
     {
         private readonly IHotelService _hotelService;
-        public HotelController(IHotelService hotelService)
+        private readonly IHotelImageService _hotelImageService;
+        public HotelController(IHotelService hotelService, IHotelImageService hotelImageService)
         {
             _hotelService = hotelService;
+            _hotelImageService = hotelImageService;
         }
 
         [HttpGet]
@@ -90,6 +95,24 @@ namespace Sireen.API.Controllers
             }              
 
             return Ok(result.Message);
+        }
+
+        [HttpPost("hotels/{hotelId}/images")]
+        public async Task<IActionResult> UploadHotelImage(int hotelId, [FromForm] HotelImageUploadDto dto)
+        {
+            dto.HotelId = hotelId;
+
+            string url = await _hotelImageService.AddHotelImage(dto);
+
+            return Ok(new { imageUrl = url });
+        }
+
+        [HttpGet("hotels/{hotelId}/images")]
+        public async Task<IActionResult> GetImagesByHotelIdAsync(int hotelId)
+        {
+            var result = await _hotelImageService.GetByHotelIdAsync(hotelId);
+
+            return Ok(result);
         }
     }
 }

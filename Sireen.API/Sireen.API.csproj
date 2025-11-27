@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Sireen.Application\Sireen.Application.csproj" />
     <ProjectReference Include="..\Sireen.Infrastructure\Sireen.Infrastructure.csproj" />
   </ItemGroup>
