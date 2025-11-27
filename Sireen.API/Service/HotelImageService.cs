@@ -2,6 +2,7 @@
 using Sireen.API.Interfaces.IService;
 using Sireen.Application.DTOs.HotelImages;
 using Sireen.Application.DTOs.Rooms;
+using Sireen.Application.Helpers;
 using Sireen.Domain.Interfaces.Repository;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Domain.Models;
@@ -45,6 +46,24 @@ namespace Sireen.API.Service
                 CreatedAt = hi.CreatedAt,
                UpdatedAt = hi.UpdatedAt    
             }).ToList();
+        }
+
+        public async Task<ServiceResult> SoftDeleteAsync(int hotelImageId)
+        {
+            var hotelImage = await _unitOfWork.HotelImages.GetByIdAsync(hotelImageId);
+            if (hotelImage == null)
+                return ServiceResult.FailureResult("Hotel Image not found.");
+
+            if (hotelImage.IsDeleted)
+                return ServiceResult.FailureResult("Hotel Image already deleted.");
+
+            hotelImage.IsDeleted = true;
+            hotelImage.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.HotelImages.Update(hotelImage);
+
+            await _unitOfWork.SaveChangeAsync();
+
+            return ServiceResult.SuccessResult("Hotel Image deleted successfully.");
         }
     }
 }

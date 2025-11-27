@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sireen.API.DTOs.HotelImages;
 using Sireen.API.DTOs.RoomImages;
 using Sireen.API.Interfaces.IService;
+using Sireen.API.Service;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.Interfaces.Services;
 using System.Security.Claims;
@@ -113,6 +114,21 @@ namespace Sireen.API.Controllers
             var result = await _hotelImageService.GetByHotelIdAsync(hotelId);
 
             return Ok(result);
+        }
+
+        [HttpDelete("DeleteImage/{imageId}")]
+        public async Task<IActionResult> DeleteHotelImage(int imageId)
+        {
+            var result = await _hotelImageService.SoftDeleteAsync(imageId);
+            if (!result.Success)
+            {
+                if (result.Message.Contains("not found"))
+                    return NotFound(result.Message);
+
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Message);
         }
     }
 }

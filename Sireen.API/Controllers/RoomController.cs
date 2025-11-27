@@ -135,5 +135,20 @@ namespace Sireen.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("DeleteImage/{imageId}")]
+        public async Task<IActionResult> DeleteRoomImage(int imageId)
+        {
+            var result = await _roomImageService.SoftDeleteAsync(imageId);
+            if (!result.Success)
+            {
+                if (result.Message.Contains("not found"))
+                    return NotFound(result.Message);
+
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Message);
+        }
     }
 }
