@@ -56,31 +56,11 @@ namespace Sireen.Infrastructure.Repositories
             return await _context.Bookings.Where(b => b.UserId == userId).ToListAsync();
         }
 
-        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
+        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime? checkOut)
         {
             return !await _context.Bookings.AnyAsync(
                 b => b.RoomId == roomId && 
                 (checkIn < b.CheckOut && checkOut > b.CheckIn) || (b.CheckOut == null && checkOut > b.CheckIn) );
-        }
-
-        public async Task SoftDeleteAsync(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
-
-            if (booking != null)
-            {
-                booking.IsDeleted = true;
-            }
-        }
-
-        public async Task UpdateStatusAsync(int bookingId, BookingStatus status)
-        {
-            var booking = await _context.Bookings.FindAsync(bookingId);
-
-            if (booking != null)
-            {
-                booking.BookingStatus = status;
-            }
         }
     }
 }
