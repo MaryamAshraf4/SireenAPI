@@ -38,22 +38,26 @@ namespace Sireen.Infrastructure.Repositories
         public override async Task<Booking?> GetByIdAsync(int id)
         {
             return await _context.Bookings.Include(b => b.User)
-                .Include(b => b.Room).FirstOrDefaultAsync(b => b.Id == id);
+                .Include(b => b.Room).ThenInclude(r => r.Bookings)
+                .ThenInclude(b => b.Payment).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<IEnumerable<Booking>> GetByRoomIdAsync(int roomId)
         {
-            return await _context.Bookings.Where(b => b.RoomId == roomId).ToListAsync();
+            return await _context.Bookings.Include(b => b.User)
+                .Include(b => b.Room).Include(b => b.Payment).Where(b => b.RoomId == roomId).ToListAsync();
         }
 
         public async Task<IEnumerable<Booking>> GetByStatusAsync(BookingStatus status)
         {
-            return await _context.Bookings.Where(b => b.BookingStatus == status).ToListAsync();
+            return await _context.Bookings.Include(b => b.Room).ThenInclude(r => r.Hotel)
+                .Include(b => b.Payment).Where(b => b.BookingStatus == status).ToListAsync();
         }
 
         public async Task<IEnumerable<Booking>> GetByUserIdAsync(string userId)
         {
-            return await _context.Bookings.Where(b => b.UserId == userId).ToListAsync();
+            return await _context.Bookings.Include(b => b.Room).ThenInclude(r => r.Hotel)
+                .Include(b => b.Payment).Where(b => b.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime? checkOut)

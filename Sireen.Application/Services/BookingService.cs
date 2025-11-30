@@ -36,6 +36,7 @@ namespace Sireen.Application.Services
                 RoomId = bookingDto.RoomId,
                 CheckIn = bookingDto.CheckIn,
                 CheckOut = bookingDto.CheckOut,
+                BookingStatus = BookingStatus.Pending,
                 Payment = new Payment
                 {
                     AmountPaid = bookingDto.PaymentCreate.AmountPaid,
@@ -128,7 +129,7 @@ namespace Sireen.Application.Services
                 Payment = new PaymentDisplayForBookingDto
                 {
                     Id = bookings.Payment.Id,
-                    AmountPaid = bookings.Payment.AmountPaid,
+                    AmountPaid = bookings.Payment?.AmountPaid??0,
                     PaymentStatus = bookings.Payment.PaymentStatus,
                     PaymentMethod = bookings.Payment.PaymentMethod,
                     PaymentDate = bookings.Payment.PaymentDate
@@ -218,7 +219,7 @@ namespace Sireen.Application.Services
                 HotelLocation = c.Room.Hotel.Location,
                 HotelName = c.Room.Hotel.Name,
                 HotelPhoneNumber = c.Room.Hotel.PhoneNumber,
-                Payment = new PaymentDisplayForBookingDto
+                Payment =  new PaymentDisplayForBookingDto
                 {
                     Id = c.Payment.Id,
                     AmountPaid = c.Payment.AmountPaid,
@@ -257,7 +258,7 @@ namespace Sireen.Application.Services
             booking.CheckIn = bookingDto.CheckIn.Value;
            
             if(bookingDto.CheckOut != null)
-            booking.CheckIn = bookingDto.CheckOut.Value;
+            booking.CheckOut = bookingDto.CheckOut.Value;
             
             if(bookingDto.BookingStatus != null)
             booking.BookingStatus = bookingDto.BookingStatus.Value;
