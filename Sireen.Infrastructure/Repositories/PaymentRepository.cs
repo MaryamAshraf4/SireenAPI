@@ -16,26 +16,25 @@ namespace Sireen.Infrastructure.Repositories
 
         public async Task<IEnumerable<Payment>> GetByBookingIdAsync(int bookingId)
         {
-            return await _context.Payments.Where(b => b.BookingId == bookingId).ToListAsync();
+            return await _context.Payments.Include(p => p.Booking).ThenInclude(b => b.User)
+                .Include(p => p.Booking).ThenInclude(b => b.Room).Where(b => b.BookingId == bookingId).ToListAsync();
         }
 
         public override async Task<Payment?> GetByIdAsync(int id)
         {
-            return await _context.Payments
-                .Include(p => p.Booking)
-                .ThenInclude(b => b.Room)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Payments.Include(p => p.Booking).ThenInclude(b => b.User)
+                .Include(p => p.Booking).ThenInclude(b => b.Room).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Payment>> GetByUserIdAsync(string userId)
         {
-            return await _context.Payments.Include(p => p.Booking)
-                .Where(p => p.Booking.UserId  == userId).ToListAsync();
+            return await _context.Payments.Include(p => p.Booking).ThenInclude(b => b.User)
+                .Include(p => p.Booking).ThenInclude(b => b.Room).Where(p => p.Booking.UserId  == userId).ToListAsync();
         }
 
         public async Task<IEnumerable<Payment>> GetPaymentsByHotelAndDateAsync(int hotelId, DateTime? startDate, DateTime? endDate)
         {
-            var query = _context.Payments.Include(p => p.Booking)
+            var query = _context.Payments.Include(p => p.Booking).ThenInclude(b => b.User).Include(p => p.Booking)
                 .ThenInclude(b => b.Room).ThenInclude(r => r.Hotel).Where(p => p.Booking.Room.HotelId == hotelId);
 
             if (startDate.HasValue)

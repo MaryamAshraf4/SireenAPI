@@ -16,8 +16,5 @@ namespace Sireen.Application.DTOs.Payments
 
         [Required(ErrorMessage = "Payment method is required")]
         public PaymentMethod PaymentMethod { get; set; }
-
-        [Required(ErrorMessage = "Booking ID is required")]
-        public int BookingId { get; set; }
     }
 }

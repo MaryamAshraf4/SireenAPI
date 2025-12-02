@@ -17,6 +17,5 @@ namespace Sireen.Application.DTOs.Bookings
         [Required]
         public DateTime CheckIn { get; set; } = DateTime.UtcNow;
         public DateTime? CheckOut { get; set; }
-        public CreatePaymentDto? PaymentCreate { get; set; } = new CreatePaymentDto();
     }
 }

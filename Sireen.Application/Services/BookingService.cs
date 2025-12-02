@@ -37,11 +37,6 @@ namespace Sireen.Application.Services
                 CheckIn = bookingDto.CheckIn,
                 CheckOut = bookingDto.CheckOut,
                 BookingStatus = BookingStatus.Pending,
-                Payment = new Payment
-                {
-                    AmountPaid = bookingDto.PaymentCreate.AmountPaid,
-                    PaymentMethod = bookingDto.PaymentCreate.PaymentMethod,
-                }
             };
 
             await _unitOfWork.Bookings.AddAsync(booking);

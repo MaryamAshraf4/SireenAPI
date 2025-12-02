@@ -47,6 +47,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IRoomImageService, RoomImageService>();
 builder.Services.AddScoped<IHotelImageService, HotelImageService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 
