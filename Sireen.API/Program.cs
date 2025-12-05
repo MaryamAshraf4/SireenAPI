@@ -2,13 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sireen.API.Interfaces.IService;
 using Sireen.API.Service;
-using Sireen.Application.Interfaces.Services;
-using Sireen.Application.Services;
-using Sireen.Domain.Interfaces.Services;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Domain.Models;
 using Sireen.Infrastructure.Persistence;
 using Sireen.Infrastructure.UnitOfWork;
+using Sireen.Application.Dependencies;
+using Sireen.Infrastructure.Dependencies;
 
 string txt = "DevCors";
 
@@ -21,8 +20,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-
 builder.Services.AddCors( option =>
 {
     option.AddPolicy(txt, 
@@ -34,20 +31,15 @@ builder.Services.AddCors( option =>
         });
 });
 
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
-builder.Services.AddScoped<IRoleService,RoleService>();
-builder.Services.AddScoped<IAppUserService,AppUserService>();
-builder.Services.AddScoped<IHotelService,HotelService>();
-builder.Services.AddScoped<IAmenityService, AmenityService>();
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IRoomImageService, RoomImageService>();
 builder.Services.AddScoped<IHotelImageService, HotelImageService>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 

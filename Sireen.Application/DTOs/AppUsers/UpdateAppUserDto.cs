@@ -25,6 +25,5 @@ namespace Sireen.Application.DTOs.AppUsers
 
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string? Email { get; set; }
-        public bool? ChangePassword { get; set; }
     }
 }
