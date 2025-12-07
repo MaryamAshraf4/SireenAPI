@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Infrastructure.Persistence;
+using Sireen.Infrastructure.UnitofWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Sireen.Infrastructure.Dependencies
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(config.GetConnectionString("Default")));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }

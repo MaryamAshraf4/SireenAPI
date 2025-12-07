@@ -5,7 +5,6 @@ using Sireen.API.Service;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Domain.Models;
 using Sireen.Infrastructure.Persistence;
-using Sireen.Infrastructure.UnitOfWork;
 using Sireen.Application.Dependencies;
 using Sireen.Infrastructure.Dependencies;
 
@@ -36,7 +35,6 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IRoomImageService, RoomImageService>();
 builder.Services.AddScoped<IHotelImageService, HotelImageService>();
