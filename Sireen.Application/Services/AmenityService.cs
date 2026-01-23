@@ -1,4 +1,5 @@
-﻿using Sireen.Application.DTOs.Amenities;
+﻿using AutoMapper;
+using Sireen.Application.DTOs.Amenities;
 using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Interfaces.UnitOfWork;
@@ -14,19 +15,16 @@ namespace Sireen.Application.Services
     public class AmenityService : IAmenityService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public AmenityService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public AmenityService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult> AddAsync(CreateAmenityDto amenityDto)
         {
-            var amenity = new Amenity
-            {             
-                Name = amenityDto.Name,
-                IsFree = amenityDto.IsFree,
-                Description = amenityDto.Description
-            };
+            var amenity = _mapper.Map<Amenity>(amenityDto);
 
             await _unitOfWork.Amenities.AddAsync(amenity);
             await _unitOfWork.SaveChangeAsync();
@@ -38,11 +36,7 @@ namespace Sireen.Application.Services
         {
             var amenities = await _unitOfWork.Amenities.GetAllAsync();
 
-            return amenities.Select( a => new AmenityDto
-            {
-                Id = a.Id,
-                Name = a.Name
-            }).ToList();
+            return _mapper.Map<IEnumerable<AmenityDto>>(amenities);
         }
 
         public async Task<DisplayAmenityDto?> GetByIdAsync(int id)
@@ -52,13 +46,7 @@ namespace Sireen.Application.Services
             if (amenity == null)
                 return null;
 
-            return  new DisplayAmenityDto
-            {
-                Id = amenity.Id,
-                IsFree = true,
-                Name = amenity.Name,
-                Description = amenity.Description
-            };
+            return _mapper.Map<DisplayAmenityDto>(amenity);
         }
 
         public async Task<ServiceResult> UpdateAmenityAsync(int amenitylId, UpdateAmenityDto amenityDto)
@@ -68,11 +56,7 @@ namespace Sireen.Application.Services
             if (amenity == null)
                 return ServiceResult.FailureResult("Amenity not found.");
 
-            amenity.Name = amenityDto.Name;
-            amenity.IsFree = amenityDto.IsFree;
-
-            if(amenityDto.Description != null)
-                amenity.Description = amenityDto.Description;
+            _mapper.Map(amenityDto, amenity);
 
             _unitOfWork.Amenities.Update(amenity);
             await _unitOfWork.SaveChangeAsync();
