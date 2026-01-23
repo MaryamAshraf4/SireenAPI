@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Sireen.API.Interfaces.IService;
 using Sireen.API.Service;
+using Sireen.Application.Dependencies;
+using Sireen.Application.Mapping;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Domain.Models;
-using Sireen.Infrastructure.Persistence;
-using Sireen.Application.Dependencies;
 using Sireen.Infrastructure.Dependencies;
+using Sireen.Infrastructure.Persistence;
 
 string txt = "DevCors";
 
@@ -38,6 +40,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<A
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IRoomImageService, RoomImageService>();
 builder.Services.AddScoped<IHotelImageService, HotelImageService>();
+
+builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()); });
+
 
 var app = builder.Build();
 

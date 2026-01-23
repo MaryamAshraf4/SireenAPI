@@ -1,4 +1,5 @@
-﻿using Sireen.Application.DTOs.Amenities;
+﻿using AutoMapper;
+using Sireen.Application.DTOs.Amenities;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Helpers;
@@ -18,9 +19,11 @@ namespace Sireen.Application.Services
     public class RoomService : IRoomService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public RoomService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public RoomService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult> AddAmenityToRoomAsync(int roomId, int amenityId)
@@ -66,16 +69,9 @@ namespace Sireen.Application.Services
 
         public async Task<ServiceResult> AddAsync(CreateRoomDto roomDto, int hotelId)
         {
-            var room = new Room
-            {
-                RoomType = roomDto.RoomType,
-                Capacity = roomDto.Capacity,
-                RoomNumber = roomDto.RoomNumber,
-                PricePerNight = roomDto.PricePerNight,   
-                CreatedAt = DateTime.UtcNow,
-                RoomStatus = RoomStatus.Available,
-                HotelId = hotelId
-            };
+            var room = _mapper.Map<Room>(roomDto);
+
+            room.HotelId = hotelId;     
 
             await _unitOfWork.Rooms.AddAsync(room);
             await _unitOfWork.SaveChangeAsync();
@@ -87,16 +83,7 @@ namespace Sireen.Application.Services
         {
             var rooms = await _unitOfWork.Rooms.GetAllAsync();
 
-            return rooms.Select(r => new RoomDto
-            {
-                Id = r.ID,
-                Capacity = r.Capacity,
-                RoomNumber= r.RoomNumber,
-                PricePerNight = r.PricePerNight,
-                RoomType = r.RoomType.ToString(),
-                RoomStatus = r.RoomStatus.ToString(),
-                RoomImages = r.RoomImages.Select(img => img.ImageUrl).ToList(),
-            }).ToList();
+            return _mapper.Map<IEnumerable<RoomDto>>(rooms);
         }
 
         public async Task<DisplayRoomDto?> GetByIdAsync(int id)
@@ -105,56 +92,21 @@ namespace Sireen.Application.Services
             if (room == null || room.IsDelete)
                 return null;
 
-            return new DisplayRoomDto
-            {
-                Id = room.ID,
-                Capacity = room.Capacity,
-                RoomNumber = room.RoomNumber,
-                PricePerNight = room.PricePerNight,
-                RoomType = room.RoomType.ToString(),
-                RoomStatus = room.RoomStatus.ToString(),
-                RoomImages = room.RoomImages.Select(img => img.ImageUrl).ToList(),
-                Amenities = room.Amenities.Select(r => new DisplayAmenityDto
-                {
-                    Id = r.Id,
-                    Name = r.Name,
-                    IsFree = r.IsFree,
-                    Description = r.Description
-                }).ToList()
-
-            };
+            return _mapper.Map<DisplayRoomDto>(room);
         }
 
         public async Task<IEnumerable<RoomDto>> GetRoomsByHotelIdAsync(int hotelId)
         {
             var rooms = await _unitOfWork.Rooms.GetRoomsByHotelIdAsync(hotelId);
 
-            return rooms.Select(r => new RoomDto
-            {
-                Id = r.ID,
-                Capacity = r.Capacity,
-                RoomNumber = r.RoomNumber,
-                PricePerNight = r.PricePerNight,
-                RoomType = r.RoomType.ToString(),
-                RoomStatus = r.RoomStatus.ToString(),
-                RoomImages = r.RoomImages.Select(img => img.ImageUrl).ToList(),
-            }).ToList();
+            return _mapper.Map<IEnumerable<RoomDto>>(rooms);
         }
 
         public async Task<RoomDto> SearchAsync(int? roomNumber, int hotelId)
         {
             var room = await _unitOfWork.Rooms.SearchAsync(roomNumber, hotelId);
 
-            return new RoomDto
-            {
-                Id = room.ID,
-                Capacity = room.Capacity,
-                RoomNumber = room.RoomNumber,
-                PricePerNight = room.PricePerNight,
-                RoomType = room.RoomType.ToString(),
-                RoomStatus = room.RoomStatus.ToString(),
-                RoomImages = room.RoomImages.Select(img => img.ImageUrl).ToList(),
-            };
+            return _mapper.Map<RoomDto>(room);
         }
 
         public async Task<ServiceResult> SoftDeleteAsync(int id)
@@ -182,12 +134,7 @@ namespace Sireen.Application.Services
             if (room == null)
                 return ServiceResult.FailureResult("Room not found.");
 
-            room.Capacity = roomDto.Capacity;
-            room.PricePerNight = roomDto.PricePerNight;
-            room.UpdatedAt = DateTime.UtcNow;
-            room.RoomType = roomDto.RoomType;
-            room.RoomStatus = roomDto.RoomStatus;
-
+            _mapper.Map(roomDto, room);
 
             _unitOfWork.Rooms.Update(room);
             await _unitOfWork.SaveChangeAsync();
