@@ -1,4 +1,5 @@
-﻿using Sireen.Application.DTOs.Ratings;
+﻿using AutoMapper;
+using Sireen.Application.DTOs.Ratings;
 using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Interfaces.UnitOfWork;
@@ -14,18 +15,16 @@ namespace Sireen.Application.Services
     public class RatingService : IRatingService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public RatingService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public RatingService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task<ServiceResult> AddAsync(CreateRatingDto ratingDto, string userId)
         {
-            var rating = new Rating { 
-                Score = ratingDto.Score,
-                Comment = ratingDto.Comment,
-                HotelId = ratingDto.HotelId,
-                UserId = userId
-            };
+            var rating = _mapper.Map<Rating>(ratingDto); 
+            rating.UserId = userId;     
 
             await _unitOfWork.Ratings.AddRatingAsync(rating);
             await _unitOfWork.SaveChangeAsync();
@@ -42,28 +41,14 @@ namespace Sireen.Application.Services
         {
             var ratings = await _unitOfWork.Ratings.GetRatingsByHotelAsync(hotelId);
 
-            return ratings.Select(r => new HotelRatingDto {
-                Id = r.Id,
-                Score = r.Score,
-                Comment = r.Comment,
-                CreatedAt = r.CreatedAt,
-                ClientFullName = r.User.FullName,
-                ClientNationality = r.User.Nationality
-            });
+            return _mapper.Map<IEnumerable<HotelRatingDto>>(ratings);
         }
 
         public async Task<IEnumerable<ClientRatingDto>> GetRatingsByUserAsync(string userId)
         {
             var ratings = await _unitOfWork.Ratings.GetRatingsByUserAsync(userId);
 
-            return ratings.Select(r => new ClientRatingDto
-            {
-                Id = r.Id,
-                Score = r.Score,
-                Comment = r.Comment,
-                CreatedAt = r.CreatedAt,
-                HotelName = r.Hotel.Name
-            });
+            return _mapper.Map<IEnumerable<ClientRatingDto>>(ratings);
         }
     }
 }

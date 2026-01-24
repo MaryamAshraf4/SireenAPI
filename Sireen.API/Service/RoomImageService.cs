@@ -1,4 +1,5 @@
-﻿using Sireen.API.DTOs.RoomImages;
+﻿using AutoMapper;
+using Sireen.API.DTOs.RoomImages;
 using Sireen.API.Interfaces.IService;
 using Sireen.Application.DTOs.HotelImages;
 using Sireen.Application.DTOs.RoomImages;
@@ -13,20 +14,19 @@ namespace Sireen.API.Service
     {
         private readonly IImageService _imageService;
         private readonly IUnitOfWork _unitOfWork;
-        public RoomImageService(IImageService imageService, IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public RoomImageService(IImageService imageService, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _imageService = imageService;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task<string> AddRoomImage(RoomImageUploadDto dto)
         {
             string imagePath = await _imageService.UploadImageAsync(dto.Image, "RoomImages");
 
-            var roomImage = new RoomImage
-            {
-                RoomId = dto.RoomId,
-                ImageUrl = imagePath
-            };
+            var roomImage = _mapper.Map<RoomImage>(dto);
+            roomImage.ImageUrl = imagePath;
 
             await _unitOfWork.RoomImages.AddAsync(roomImage);
             await _unitOfWork.SaveChangeAsync();
@@ -38,13 +38,7 @@ namespace Sireen.API.Service
         {
             var roomImages = await _unitOfWork.RoomImages.GetByRoomIdAsync(roomId);
 
-            return roomImages.Select(ri => new RoomImageDto
-            {
-                Id = ri.Id,
-                ImageUrl = ri.ImageUrl,
-                CreatedAt = ri.CreatedAt,
-                UpdatedAt = ri.UpdatedAt
-            }).ToList();
+            return _mapper.Map<IEnumerable<RoomImageDto>>(roomImages);
         }
 
         public async Task<ServiceResult> SoftDeleteAsync(int roomImageId)
