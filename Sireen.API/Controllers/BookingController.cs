@@ -26,6 +26,14 @@ namespace Sireen.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetActive")]
+        public async Task<IActionResult> GetActiveBookingsAsync()
+        {
+            var result = await _bookingService.GetActiveBookingsAsync();
+
+            return Ok(result);
+        }
+
         [HttpGet("GetStatus/{status}")]
         public async Task<IActionResult> GetByStatus(BookingStatus status)
         {
