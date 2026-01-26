@@ -1,4 +1,5 @@
-﻿using Sireen.Application.DTOs.Hotels;
+﻿using AutoMapper;
+using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
@@ -15,24 +16,18 @@ namespace Sireen.Application.Services
     public class HotelService : IHotelService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public HotelService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public HotelService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult> AddAsync(CreateHotelDto hotelDto, string managerId)
         {
-            var hotel = new Hotel
-            {
-                IsDeleted = false,
-                Name = hotelDto.Name,
-                Email = hotelDto.Email,
-                Location = hotelDto.Location,
-                CreatedAt = DateTime.UtcNow,
-                PhoneNumber = hotelDto.PhoneNumber,              
-                Description = hotelDto.Description,
-                ManagerId = managerId
-            };
+            var hotel = _mapper.Map<Hotel>(hotelDto);
+
+            hotel.ManagerId = managerId;
 
             await _unitOfWork.Hotels.AddAsync(hotel);
             await _unitOfWork.SaveChangeAsync();
@@ -44,16 +39,7 @@ namespace Sireen.Application.Services
         {
             var hotels = await _unitOfWork.Hotels.GetAllAsync();
 
-            return hotels.Select(h => new HotelDto
-            {
-                Id = h.Id,
-                Name = h.Name,
-                Email = h.Email,
-                Location = h.Location,
-                PhoneNumber = h.PhoneNumber,
-                Description = h.Description,
-                HotelImages = h.HotelImages.Select(img => img.ImageUrl).ToList(),
-            }).ToList();
+            return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
 
         public async Task<DisplayHotelDto?> GetByIdAsync(int id)
@@ -62,59 +48,21 @@ namespace Sireen.Application.Services
             if (hotel == null || hotel.IsDeleted)
                 return null;
 
-            return new DisplayHotelDto
-            {
-                Id = hotel.Id,
-                Name = hotel.Name,
-                Email = hotel.Email,
-                Location = hotel.Location,
-                PhoneNumber = hotel.PhoneNumber,
-                Description = hotel.Description,
-                HotelImages = hotel.HotelImages.Select(img => img.ImageUrl).ToList(),
-                Rooms = hotel.Rooms.Select(r => new RoomDto
-                {
-                    Id = r.ID,
-                    Capacity = r.Capacity,
-                    RoomNumber = r.RoomNumber,
-                    PricePerNight = r.PricePerNight,
-                    RoomType = r.RoomType.ToString(),
-                    RoomStatus = r.RoomStatus.ToString(),
-                    RoomImages = r.RoomImages.Select(img => img.ImageUrl).ToList()
-                }).ToList()
-
-            };
+            return _mapper.Map<DisplayHotelDto>(hotel);
         }
 
         public async Task<IEnumerable<HotelDto>> GetHotelsByManagerIdAsync(string managerId)
         {
             var hotels = await _unitOfWork.Hotels.GetHotelsByManagerIdAsync(managerId);
 
-            return hotels.Select(h => new HotelDto
-            {
-                Id = h.Id,
-                Name = h.Name,
-                Email = h.Email,
-                Location = h.Location,
-                PhoneNumber = h.PhoneNumber,
-                Description = h.Description,
-                HotelImages = h.HotelImages.Select(img => img.ImageUrl).ToList(),
-            }).ToList();
+            return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
 
         public async Task<IEnumerable<HotelDto>> SearchAsync(string? name, string? location)
         {
             var hotels = await _unitOfWork.Hotels.SearchAsync(name, location);
 
-            return hotels.Select(h => new HotelDto
-            {
-                Id = h.Id,
-                Name = h.Name,
-                Email = h.Email,
-                Location = h.Location,
-                PhoneNumber = h.PhoneNumber,
-                Description = h.Description,
-                HotelImages = h.HotelImages.Select(img => img.ImageUrl).ToList(),
-            }).ToList();
+            return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
 
         public async Task<ServiceResult> SoftDeleteAsync(int id)
@@ -142,13 +90,8 @@ namespace Sireen.Application.Services
             if (hotel == null)
                 return ServiceResult.FailureResult("Hotel not found.");
 
-            hotel.Name = hotelDto.Name;
-            hotel.Email = hotelDto.Email;
+            _mapper.Map(hotelDto, hotel);
             hotel.UpdatedAt = DateTime.UtcNow;
-            hotel.Location = hotelDto.Location;
-            hotel.PhoneNumber = hotelDto.PhoneNumber;
-            if(hotelDto.Description != null)
-                hotel.Description = hotelDto.Description;
 
             _unitOfWork.Hotels.Update(hotel);
             await _unitOfWork.SaveChangeAsync();
