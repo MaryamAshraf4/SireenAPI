@@ -1,4 +1,5 @@
-﻿using Sireen.Application.DTOs.Payments;
+﻿using AutoMapper;
+using Sireen.Application.DTOs.Payments;
 using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Enums;
@@ -15,20 +16,17 @@ namespace Sireen.Application.Services
     public class PaymentService : IPaymentService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public PaymentService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task<ServiceResult> AddAsync(CreatePaymentDto paymentDto, int bookingId)
         {
-            var payment = new Payment
-            {
-                BookingId = bookingId,
-                PaymentDate = DateTime.UtcNow,
-                AmountPaid = paymentDto.AmountPaid,
-                PaymentStatus = PaymentStatus.Pending,
-                PaymentMethod = paymentDto.PaymentMethod
-            };
+            var payment = _mapper.Map<Payment>(paymentDto);
+
+            payment.BookingId = bookingId;
 
             await _unitOfWork.Payments.AddAsync(payment);
             await _unitOfWork.SaveChangeAsync();
@@ -40,19 +38,7 @@ namespace Sireen.Application.Services
         {
             var payments = await _unitOfWork.Payments.GetByBookingIdAsync(bookingId);
 
-            return payments.Select(p => new PaymentDto
-            {
-                Id = p.Id,
-                AmountPaid = p.AmountPaid,
-                PaymentStatus = p.PaymentStatus,
-                PaymentMethod = p.PaymentMethod,
-                PaymentDate = p.PaymentDate,
-                RoomNumber = p.Booking.Room.RoomNumber.ToString(),
-                CheckIn = p.Booking.CheckIn,
-                CheckOut = p.Booking.CheckOut,
-                CustomerName = p.Booking.User.FullName,
-                CustomerPhoneNumber = p.Booking.User.PhoneNumber
-            }).ToList();
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);                
         }
 
         public async Task<PaymentDto?> GetByIdAsync(int id)
@@ -62,57 +48,21 @@ namespace Sireen.Application.Services
             if(payment == null)
                 return null;
 
-            return  new PaymentDto
-            {
-                Id = payment.Id,
-                AmountPaid = payment.AmountPaid,
-                PaymentStatus = payment.PaymentStatus,
-                PaymentMethod = payment.PaymentMethod,
-                PaymentDate = payment.PaymentDate,
-                RoomNumber = payment.Booking.Room.RoomNumber.ToString(),
-                CheckIn = payment.Booking.CheckIn,
-                CheckOut = payment.Booking.CheckOut,
-                CustomerName = payment.Booking.User.FullName,
-                CustomerPhoneNumber = payment.Booking.User.PhoneNumber
-            };
+            return _mapper.Map<PaymentDto>(payment);
         }
 
         public async Task<IEnumerable<PaymentDto>> GetByUserIdAsync(string userId)
         {
             var payments = await _unitOfWork.Payments.GetByUserIdAsync(userId);
 
-            return payments.Select(p => new PaymentDto
-            {
-                Id = p.Id,
-                AmountPaid = p.AmountPaid,
-                PaymentStatus = p.PaymentStatus,
-                PaymentMethod = p.PaymentMethod,
-                PaymentDate = p.PaymentDate,
-                RoomNumber = p.Booking.Room.RoomNumber.ToString(),
-                CheckIn = p.Booking.CheckIn,
-                CheckOut = p.Booking.CheckOut,
-                CustomerName = p.Booking.User.FullName,
-                CustomerPhoneNumber = p.Booking.User.PhoneNumber
-            }).ToList();
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
         }
 
         public async Task<IEnumerable<PaymentDto>> GetPaymentsByHotelAndDateAsync(int hotelId, DateTime? startDate, DateTime? endDate)
         {
             var payments = await _unitOfWork.Payments.GetPaymentsByHotelAndDateAsync(hotelId, startDate, endDate);
 
-            return payments.Select(p => new PaymentDto
-            {
-                Id = p.Id,
-                AmountPaid = p.AmountPaid,
-                PaymentStatus = p.PaymentStatus,
-                PaymentMethod = p.PaymentMethod,
-                PaymentDate = p.PaymentDate,
-                RoomNumber = p.Booking.Room.RoomNumber.ToString(),
-                CheckIn = p.Booking.CheckIn,
-                CheckOut = p.Booking.CheckOut,
-                CustomerName = p.Booking.User.FullName,
-                CustomerPhoneNumber = p.Booking.User.PhoneNumber
-            });
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
         }
 
         public async Task<ServiceResult> UpdatePaymentStatusAsync(int paymentId, UpdatePaymentManagerDto paymentDto)

@@ -11,7 +11,7 @@ namespace Sireen.Application.DTOs.Payments
 {
     public class CreatePaymentDto
     {
-        [AmountPaidRequiredForImmediateMethodsAttribute]
+        [AmountPaidRequiredForImmediateMethods]
         public decimal AmountPaid { get; set; }
 
         [Required(ErrorMessage = "Payment method is required")]

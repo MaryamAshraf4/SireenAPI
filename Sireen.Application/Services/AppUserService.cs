@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Sireen.Application.DTOs.Amenities;
 using Sireen.Application.DTOs.AppUsers;
 using Sireen.Application.DTOs.Rooms;
@@ -16,25 +17,16 @@ namespace Sireen.Application.Services
     public class AppUserService : IAppUserService
     {
         private readonly UserManager<AppUser> _userManager;
-        public AppUserService(UserManager<AppUser> userManager)
+        private readonly IMapper _mapper;
+        public AppUserService(UserManager<AppUser> userManager, IMapper mapper)
         {
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult> RegisterUserAsync(CreateAppUserDto userDto)
         {
-            var user = new AppUser
-            {
-                Email = userDto.Email,
-                FullName = userDto.FullName,
-                UserName = userDto.UserName,
-                CreatedAt = DateTime.UtcNow,
-                Nationality = userDto.Nationality,
-                PhoneNumber = userDto.PhoneNumber,
-                IdentityType = userDto.IdentityType,
-                IdentityNumber = userDto.IdentityNumber,              
-                IdentityExpiryDate = userDto.IdentityExpiryDate
-            };
+            var user = _mapper.Map<AppUser>(userDto);              
 
             var result = await _userManager.CreateAsync(user,userDto.Password);
 
@@ -64,33 +56,14 @@ namespace Sireen.Application.Services
 
         public async Task<ServiceResult> UpdateUserAsync(string userId, UpdateAppUserDto userDto)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            user.UpdatedAt = DateTime.UtcNow;
+            var user = await _userManager.FindByIdAsync(userId);            
 
             if (user == null)
                 return ServiceResult.FailureResult("User not found.");
-            if(userDto.FullName != null)
-                user.FullName = userDto.FullName;
 
-            if (userDto.IdentityType != null)
-                user.IdentityType = userDto.IdentityType.Value;        
+            _mapper.Map(userDto, user);
 
-            if (userDto.IdentityNumber != null)
-                user.IdentityNumber = userDto.IdentityNumber;
-            
-            if (userDto.Nationality != null)
-                user.Nationality = userDto.Nationality;
-           
-            if (userDto.IdentityExpiryDate != null)
-                user.IdentityExpiryDate = userDto.IdentityExpiryDate;
-            
-            if (userDto.PhoneNumber != null)
-                user.PhoneNumber = userDto.PhoneNumber;
-           
-            if (userDto.Email != null)
-                user.Email = userDto.Email;
-
+            user.UpdatedAt = DateTime.UtcNow;
 
             await _userManager.UpdateAsync(user);
 
@@ -103,19 +76,7 @@ namespace Sireen.Application.Services
             if (user == null || user.IsDeleted)
                 return null;
 
-            return new AppUserDto
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                IdentityType = user.IdentityType,
-                IdentityNumber = user.IdentityNumber,
-                Nationality = user.Nationality,
-                IdentityExpiryDate = user.IdentityExpiryDate,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt
-            };
+            return _mapper.Map<AppUserDto>(user);                
         }
     }
 }
