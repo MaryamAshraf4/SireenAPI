@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Sireen.Application.Services
+namespace Sireen.Infrastructure.Services
 {
     public class RoomService : IRoomService
     {

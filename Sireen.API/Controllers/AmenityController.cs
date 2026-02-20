@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Amenities;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.Interfaces.Services;
-using Sireen.Application.Services;
 
 namespace Sireen.API.Controllers
 {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Payments;
 using Sireen.Application.Interfaces.Services;
-using Sireen.Application.Services;
 using Sireen.Domain.Enums;
 
 namespace Sireen.API.Controllers

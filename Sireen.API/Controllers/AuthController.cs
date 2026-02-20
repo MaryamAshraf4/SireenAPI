@@ -19,6 +19,9 @@ namespace Sireen.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(CreateAppUserDto userDto) 
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _userService.RegisterUserAsync(userDto);
 
             if (!result.Success)

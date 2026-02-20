@@ -6,7 +6,6 @@ using Sireen.API.Service;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Interfaces.Services;
-using Sireen.Application.Services;
 
 namespace Sireen.API.Controllers
 {

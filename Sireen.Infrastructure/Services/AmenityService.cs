@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sireen.Application.Services
+namespace Sireen.Infrastructure.Services
 {
     public class AmenityService : IAmenityService
     {
