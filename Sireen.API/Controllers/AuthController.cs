@@ -16,7 +16,7 @@ namespace Sireen.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register(CreateAppUserDto userDto) 
         {
             if(!ModelState.IsValid)
@@ -25,6 +25,19 @@ namespace Sireen.API.Controllers
             var result = await _userService.RegisterUserAsync(userDto);
 
             if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(TokenRequestDto userDto) 
+        {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.GetTokenAsync(userDto);
+
+            if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
 
             return Ok(result);

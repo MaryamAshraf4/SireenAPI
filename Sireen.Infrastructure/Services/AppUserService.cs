@@ -53,6 +53,30 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("User registered successfully.", user.Id);
         }
 
+        public async Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto)
+        {
+            var authDto = new AuthDto();
+            var user = _userManager.Users.FirstOrDefault(u => u.Email == tokenRequestDto.Email && !u.IsDeleted);
+
+            if (user is null || !_userManager.CheckPasswordAsync(user, tokenRequestDto.Password).Result)
+            {
+                authDto.Message = "Invalid email or password.";
+                return authDto;
+            }
+
+            var jwtSecurityToken = await CreateJwtToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            authDto.IsAuthenticated = true;
+            authDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            authDto.ExpiresOn = jwtSecurityToken.ValidTo;
+            authDto.Email = user.Email;
+            authDto.Username = user.UserName;
+            authDto.Roles = roles.ToList();
+
+            return authDto;
+        }
+
         public async Task<ServiceResult> SoftDeleteAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

@@ -15,5 +15,6 @@ namespace Sireen.Domain.Interfaces.Services
         Task<ServiceResult> UpdateUserAsync(string userId, UpdateAppUserDto userDto);
         Task<ServiceResult> SoftDeleteAsync(string id);
         Task<AppUserDto?> GetByIdAsync(string id);
+        Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto);
     }
 }
