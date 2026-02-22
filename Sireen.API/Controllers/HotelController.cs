@@ -50,18 +50,28 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("manager")]
-        public async Task<IActionResult> GetByManager( [FromQuery]string managerId)
-        {           
+        public async Task<IActionResult> GetByManager()
+        {
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
             var hotels = await _hotelService.GetHotelsByManagerIdAsync(managerId);
 
             return Ok(hotels);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddHotel(CreateHotelDto hotelDto,[FromQuery] string managerId)
+        public async Task<IActionResult> AddHotel(CreateHotelDto hotelDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
 
             var result = await _hotelService.AddAsync(hotelDto, managerId);
 

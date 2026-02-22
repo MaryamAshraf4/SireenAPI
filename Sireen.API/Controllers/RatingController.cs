@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Ratings;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Models;
+using System.Security.Claims;
 
 namespace Sireen.API.Controllers
 {
@@ -32,19 +33,29 @@ namespace Sireen.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetRatingsByUser(string userId)
+        [HttpGet("GetRatingsByUser")]
+        public async Task<IActionResult> GetRatingsByUser()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
             var result = await _ratingService.GetRatingsByUserAsync(userId);
 
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRating([FromBody]CreateRatingDto ratingDto, [FromQuery]string userId)
+        public async Task<IActionResult> AddRating([FromBody]CreateRatingDto ratingDto)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
 
             var result = await _ratingService.AddAsync(ratingDto, userId);
 

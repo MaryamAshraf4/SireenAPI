@@ -42,9 +42,14 @@ namespace Sireen.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Client/{userId}")]
-        public async Task<IActionResult> GetByUserId(string userId)
+        [HttpGet("Client")]
+        public async Task<IActionResult> GetByUserId()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
             var result = await _bookingService.GetByUserIdAsync(userId);
 
             return Ok(result);
@@ -70,10 +75,15 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBooking(CreateBookingDto bookingDto, [FromQuery] string clientId)
+        public async Task<IActionResult> AddBooking(CreateBookingDto bookingDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (clientId == null)
+                return Unauthorized("Unauthorized User");
 
             var result = await _bookingService.AddAsync(bookingDto, clientId);
 

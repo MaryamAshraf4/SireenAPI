@@ -4,6 +4,7 @@ using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Payments;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Enums;
+using System.Security.Claims;
 
 namespace Sireen.API.Controllers
 {
@@ -33,9 +34,14 @@ namespace Sireen.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("User/{userId}")]
-        public async Task<IActionResult> GetPaymentByUserId(string userId)
+        [HttpGet("GetPaymentByUserId")]
+        public async Task<IActionResult> GetPaymentByUserId()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
             var result = await _paymentService.GetByUserIdAsync(userId);
 
             return Ok(result);
