@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Sireen.Application.DTOs.Amenities;
@@ -9,13 +10,14 @@ using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Interfaces.Services;
 using Sireen.Domain.Models;
+using Sireen.Infrastructure.Configurations;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using Sireen.Infrastructure.Configurations;
 
 namespace Sireen.Infrastructure.Services
 {
@@ -69,14 +71,67 @@ namespace Sireen.Infrastructure.Services
 
             authDto.IsAuthenticated = true;
             authDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            authDto.ExpiresOn = jwtSecurityToken.ValidTo;
+            //authDto.ExpiresOn = jwtSecurityToken.ValidTo;
             authDto.Email = user.Email;
             authDto.Username = user.UserName;
             authDto.Roles = roles.ToList();
 
-            return authDto;
+            if(user.RefreshTokens.Any(r => r.IsActive))
+            {
+                var activeRefreshToken = user.RefreshTokens.First(r => r.IsActive);
+                authDto.RefreshToken = activeRefreshToken.Token;
+                authDto.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authDto.RefreshToken = refreshToken.Token;
+                authDto.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
+
+           return authDto;
         }
 
+        public async Task<AuthDto> RefreshTokenAsync(string token)
+        {
+            var authDto = new AuthDto();
+
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+            {
+                authDto.Message = "Invalid token";
+                return authDto;
+            }
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+            {
+                authDto.Message = "Inactive token";
+                return authDto;
+            }
+
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var jwtToken = await CreateJwtToken(user);
+            authDto.IsAuthenticated = true;
+            authDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authDto.Email = user.Email;
+            authDto.Username = user.UserName;
+            var roles = await _userManager.GetRolesAsync(user);
+            authDto.Roles = roles.ToList();
+            authDto.RefreshToken = newRefreshToken.Token;
+            authDto.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+
+            return authDto;
+        }
         public async Task<ServiceResult> SoftDeleteAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -148,6 +203,22 @@ namespace Sireen.Infrastructure.Services
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
+        }
+
+        private RefreshToken GenerateRefreshToken() 
+        {
+            var randomNumber = new byte[32];
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return new RefreshToken
+                {
+                    Token = Convert.ToBase64String(randomNumber),
+                    ExpiresOn = DateTime.Now.AddDays(10),
+                    CreatedOn = DateTime.Now
+                };
+            }
         }
     }
 }

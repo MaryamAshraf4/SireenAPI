@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Sireen.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,6 @@ namespace Sireen.Domain.Models
         public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
         public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
     }
 }

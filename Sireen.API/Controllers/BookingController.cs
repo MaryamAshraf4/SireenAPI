@@ -4,6 +4,7 @@ using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Enums;
+using System.Security.Claims;
 
 namespace Sireen.API.Controllers
 {
