@@ -27,6 +27,10 @@ namespace Sireen.API.Controllers
             if (!result.Success)
                 return BadRequest(result.Message);
 
+            var authData = (AuthDto)result.Data;
+
+            SetRefreshTokenInCookie(authData.RefreshToken, authData.RefreshTokenExpiration);
+
             return Ok(result);
         }
         [HttpPost("Login")]
@@ -59,6 +63,22 @@ namespace Sireen.API.Controllers
             SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
 
             return Ok(result);
+        }
+
+        [HttpPost("revokeToken")]
+        public async Task<IActionResult> RevokeToken(RevokeTokenDto revokeToken)
+        {
+            var token = revokeToken.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token is required!");
+
+            var result = await _userService.RevokeTokenAsync(token);
+
+            if (!result)
+                return BadRequest("Token is invalid!");
+
+            return Ok();
         }
 
         [HttpGet("{id}")]

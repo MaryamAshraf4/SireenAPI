@@ -50,9 +50,24 @@ namespace Sireen.Infrastructure.Services
 
             await _userManager.AddToRoleAsync(user, "Customer");
 
-            var jwtSecurityToken = await CreateJwtToken(user); 
-               
-            return ServiceResult.SuccessResult("User registered successfully.", user.Id);
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshTokens?.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var authDto = new AuthDto
+            {
+                Email = user.Email,
+                IsAuthenticated = true,
+                Roles = new List<string> { "Customer" },
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Username = user.UserName,
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiration = refreshToken.ExpiresOn
+            };
+
+            return ServiceResult.SuccessResult("User registered successfully.", authDto);
         }
 
         public async Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto)
@@ -71,7 +86,7 @@ namespace Sireen.Infrastructure.Services
 
             authDto.IsAuthenticated = true;
             authDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            //authDto.ExpiresOn = jwtSecurityToken.ValidTo;
+            authDto.ExpiresOn = jwtSecurityToken.ValidTo;
             authDto.Email = user.Email;
             authDto.Username = user.UserName;
             authDto.Roles = roles.ToList();
@@ -172,6 +187,26 @@ namespace Sireen.Infrastructure.Services
 
             return _mapper.Map<AppUserDto>(user);                
         }
+
+        public async Task<bool> RevokeTokenAsync(string token)
+        {
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                return false;
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+                return false;
+
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+
+            return true;
+        }
+
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
         {

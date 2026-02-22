@@ -15,7 +15,7 @@ namespace Sireen.Application.DTOs.AppUsers
         public string Email { get; set; }
         public List<string> Roles { get; set; }
         public string Token { get; set; }
-        //public DateTime ExpiresOn { get; set; }
+        public DateTime ExpiresOn { get; set; }
 
         [JsonIgnore]
         public string? RefreshToken { get; set; }

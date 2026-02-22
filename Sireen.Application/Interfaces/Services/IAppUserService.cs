@@ -17,5 +17,6 @@ namespace Sireen.Domain.Interfaces.Services
         Task<AppUserDto?> GetByIdAsync(string id);
         Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto);
         Task<AuthDto> RefreshTokenAsync(string token);
+        Task<bool> RevokeTokenAsync(string token);
     }
 }
