@@ -1,6 +1,7 @@
 ﻿using Sireen.Application.DTOs.AppUsers;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Helpers;
+using Sireen.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,7 @@ namespace Sireen.Domain.Interfaces.Services
         Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto);
         Task<AuthDto> RefreshTokenAsync(string token);
         Task<bool> RevokeTokenAsync(string token);
+        Task<AppUser> GetByEmailAsync(string id);
+        Task<bool> ConfirmEmailAsync(AppUser user, string token);
     }
 }

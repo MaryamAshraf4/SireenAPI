@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.AppUsers;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Domain.Interfaces.Services;
+using System.Security.Claims;
 
 namespace Sireen.API.Controllers
 {
@@ -26,10 +28,6 @@ namespace Sireen.API.Controllers
 
             if (!result.Success)
                 return BadRequest(result.Message);
-
-            var authData = (AuthDto)result.Data;
-
-            SetRefreshTokenInCookie(authData.RefreshToken, authData.RefreshTokenExpiration);
 
             return Ok(result);
         }
@@ -79,6 +77,26 @@ namespace Sireen.API.Controllers
                 return BadRequest("Token is invalid!");
 
             return Ok();
+        }
+
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string token, string? email)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+                return BadRequest("Invalid Payload");
+
+            token = Uri.UnescapeDataString(token);
+
+            var user = await _userService.GetByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Invalid user.");
+
+            var result = await _userService.ConfirmEmailAsync(user, token);
+
+            if (!result)
+                return BadRequest("Something went wrong.");
+
+            return Ok("Email confirmed successfully.");
         }
 
         [HttpGet("{id}")]

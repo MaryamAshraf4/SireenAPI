@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Sireen.Application.DTOs.Amenities;
@@ -52,28 +53,53 @@ namespace Sireen.Infrastructure.Services
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshTokens?.Add(refreshToken);
-            await _userManager.UpdateAsync(user);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var authDto = new AuthDto
-            {
-                Email = user.Email,
-                IsAuthenticated = true,
-                Roles = new List<string> { "Customer" },
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Username = user.UserName,
-                RefreshToken = refreshToken.Token,
-                RefreshTokenExpiration = refreshToken.ExpiresOn
-            };
+            return ServiceResult.SuccessResult($"Please confirm your email with code that you have received {token}.");
 
-            return ServiceResult.SuccessResult("User registered successfully.", authDto);
+            //var refreshToken = GenerateRefreshToken();
+            //user.RefreshTokens?.Add(refreshToken);
+            //await _userManager.UpdateAsync(user);
+
+            //var authDto = new AuthDto
+            //{
+            //    Email = user.Email,
+            //    IsAuthenticated = true,
+            //    Roles = new List<string> { "Customer" },
+            //    Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+            //    Username = user.UserName,
+            //    RefreshToken = refreshToken.Token,
+            //    RefreshTokenExpiration = refreshToken.ExpiresOn
+            //};
+
+            //return ServiceResult.SuccessResult("User registered successfully.", authDto);
+        }
+
+        public async Task<AppUser> GetByEmailAsync(string id)
+        {
+            var user = await _userManager.FindByEmailAsync(id);
+            if (user == null || user.IsDeleted)
+                return null;
+
+            return user;
+        }
+        public async Task<bool> ConfirmEmailAsync(AppUser user, string token)
+        {
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            return result.Succeeded;
         }
 
         public async Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto)
         {
             var authDto = new AuthDto();
+
             var user = _userManager.Users.FirstOrDefault(u => u.Email == tokenRequestDto.Email && !u.IsDeleted);
+
+            if (!await _userManager.IsEmailConfirmedAsync(user)) {
+                authDto.Message = "Email is not Comfirmed.";
+                return authDto;
+            }
 
             if (user is null || !_userManager.CheckPasswordAsync(user, tokenRequestDto.Password).Result)
             {
