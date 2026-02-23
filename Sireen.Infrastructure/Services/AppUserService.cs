@@ -51,8 +51,6 @@ namespace Sireen.Infrastructure.Services
 
             await _userManager.AddToRoleAsync(user, "Customer");
 
-            var jwtSecurityToken = await CreateJwtToken(user);
-
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             return ServiceResult.SuccessResult($"Please confirm your email with code that you have received {token}.");
