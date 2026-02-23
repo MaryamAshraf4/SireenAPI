@@ -85,7 +85,6 @@ namespace Sireen.API.Controllers
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
                 return BadRequest("Invalid Payload");
 
-            token = Uri.UnescapeDataString(token);
 
             var user = await _userService.GetByEmailAsync(email);
             if (user == null)

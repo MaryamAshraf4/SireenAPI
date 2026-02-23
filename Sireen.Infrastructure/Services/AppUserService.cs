@@ -57,27 +57,11 @@ namespace Sireen.Infrastructure.Services
 
             return ServiceResult.SuccessResult($"Please confirm your email with code that you have received {token}.");
 
-            //var refreshToken = GenerateRefreshToken();
-            //user.RefreshTokens?.Add(refreshToken);
-            //await _userManager.UpdateAsync(user);
-
-            //var authDto = new AuthDto
-            //{
-            //    Email = user.Email,
-            //    IsAuthenticated = true,
-            //    Roles = new List<string> { "Customer" },
-            //    Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-            //    Username = user.UserName,
-            //    RefreshToken = refreshToken.Token,
-            //    RefreshTokenExpiration = refreshToken.ExpiresOn
-            //};
-
-            //return ServiceResult.SuccessResult("User registered successfully.", authDto);
         }
 
-        public async Task<AppUser> GetByEmailAsync(string id)
+        public async Task<AppUser> GetByEmailAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(id);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null || user.IsDeleted)
                 return null;
 
@@ -97,7 +81,7 @@ namespace Sireen.Infrastructure.Services
             var user = _userManager.Users.FirstOrDefault(u => u.Email == tokenRequestDto.Email && !u.IsDeleted);
 
             if (!await _userManager.IsEmailConfirmedAsync(user)) {
-                authDto.Message = "Email is not Comfirmed.";
+                authDto.Message = "Email is not Confirmed.";
                 return authDto;
             }
 
