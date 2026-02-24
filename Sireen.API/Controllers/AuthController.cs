@@ -99,9 +99,14 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(string id)
+        public async Task<IActionResult> GetUserById()
         {
-            var user = await _userService.GetByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
+            var user = await _userService.GetByIdAsync(userId);
 
             if (user == null)
                 return NotFound("User not found.");
@@ -109,13 +114,18 @@ namespace Sireen.API.Controllers
             return Ok(user);
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateAppUserDto userDto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateAppUserDto userDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _userService.UpdateUserAsync(id, userDto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _userService.UpdateUserAsync(userId, userDto);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -124,10 +134,15 @@ namespace Sireen.API.Controllers
 
         }
 
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser()
         {
-            var result = await _userService.SoftDeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _userService.SoftDeleteAsync(userId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
