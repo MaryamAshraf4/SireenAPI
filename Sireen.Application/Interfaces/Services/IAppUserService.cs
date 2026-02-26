@@ -20,6 +20,7 @@ namespace Sireen.Domain.Interfaces.Services
         Task<AuthDto> RefreshTokenAsync(string token);
         Task<bool> RevokeTokenAsync(string token);
         Task<AppUser> GetByEmailAsync(string email);
-        Task<bool> ConfirmEmailAsync(AppUser user, string token);
+        Task<ServiceResult> ConfirmEmailOtpAsync(string email, string otp);
+        Task ResendOtpAsync(string email);
     }
 }

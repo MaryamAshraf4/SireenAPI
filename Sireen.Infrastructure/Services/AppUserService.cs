@@ -27,11 +27,13 @@ namespace Sireen.Infrastructure.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly JwtSettings _jwt;
-        public AppUserService(UserManager<AppUser> userManager, IMapper mapper, IOptions<JwtSettings> jwt)
+        private readonly IEmailService _emailService;
+        public AppUserService(UserManager<AppUser> userManager, IMapper mapper, IOptions<JwtSettings> jwt, IEmailService emailService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwt = jwt.Value;
+            _emailService = emailService;
         }
 
         public async Task<ServiceResult> RegisterUserAsync(CreateAppUserDto userDto)
@@ -51,10 +53,12 @@ namespace Sireen.Infrastructure.Services
 
             await _userManager.AddToRoleAsync(user, "Customer");
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var otp = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
-            return ServiceResult.SuccessResult($"Please confirm your email with code that you have received {token}.");
+            await _emailService.SendEmailAsync(user.Email, "Email Confirmation OTP",
+                $"Your OTP Code is: {otp}");
 
+            return ServiceResult.SuccessResult("User registered. Please verify OTP sent to email.");
         }
 
         public async Task<AppUser> GetByEmailAsync(string email)
@@ -65,11 +69,35 @@ namespace Sireen.Infrastructure.Services
 
             return user;
         }
-        public async Task<bool> ConfirmEmailAsync(AppUser user, string token)
-        {
-            var result = await _userManager.ConfirmEmailAsync(user, token);
 
-            return result.Succeeded;
+        public async Task<ServiceResult> ConfirmEmailOtpAsync(string email, string otp)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                "Email",
+                otp);
+
+            if (!isValid)
+                return ServiceResult.FailureResult("Invalid OTP");
+
+            user.EmailConfirmed = true;
+            await _userManager.UpdateAsync(user);
+
+            return ServiceResult.SuccessResult("Email confirmed successfully");
+        }
+
+        public async Task ResendOtpAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            var otp = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+
+            await _emailService.SendEmailAsync(user.Email, "Resend OTP", otp);
         }
 
         public async Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto)

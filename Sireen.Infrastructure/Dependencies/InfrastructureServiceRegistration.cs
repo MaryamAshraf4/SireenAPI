@@ -29,6 +29,7 @@ namespace Sireen.Infrastructure.Dependencies
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IEmailService, EmailService>();
             return services;
         }
     }

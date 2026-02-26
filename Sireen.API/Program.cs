@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Sireen.Infrastructure.Configurations;
 using Sireen.API.Interfaces.IService;
 using Sireen.API.Service;
 using Sireen.Application.Mapping;
+using Sireen.Application.Settings;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Domain.Models;
+using Sireen.Infrastructure.Configurations;
 using Sireen.Infrastructure.Dependencies;
 using Sireen.Infrastructure.Persistence;
 using System.Text;
@@ -18,6 +19,7 @@ string txt = "DevCors";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 // Add services to the container.
 
@@ -42,7 +44,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedEmail = true;
-    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+    //options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();

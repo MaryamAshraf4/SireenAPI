@@ -79,23 +79,16 @@ namespace Sireen.API.Controllers
             return Ok();
         }
 
-        [HttpGet("confirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(string token, string? email)
+
+        [HttpPost("confirmEmailOtp")]
+        public async Task<IActionResult> ConfirmEmailOtp(ConfirmOtpDto dto)
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
-                return BadRequest("Invalid Payload");
+            var result = await _userService.ConfirmEmailOtpAsync(dto.Email, dto.Otp);
 
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            var user = await _userService.GetByEmailAsync(email);
-            if (user == null)
-                return BadRequest("Invalid user.");
-
-            var result = await _userService.ConfirmEmailAsync(user, token);
-
-            if (!result)
-                return BadRequest("Something went wrong.");
-
-            return Ok("Email confirmed successfully.");
+            return Ok(result.Message);
         }
 
         [HttpGet("{id}")]
