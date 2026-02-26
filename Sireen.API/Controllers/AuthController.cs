@@ -91,6 +91,17 @@ namespace Sireen.API.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPost("resendOtp")]
+        public async Task<IActionResult> ResendOtp([FromBody] ResendOtpRequest request)
+        {
+            var result = await _userService.ResendOtpAsync(request.Email);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById()
         {

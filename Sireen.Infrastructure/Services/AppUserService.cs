@@ -91,13 +91,21 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Email confirmed successfully");
         }
 
-        public async Task ResendOtpAsync(string email)
+        public async Task<ServiceResult> ResendOtpAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found");
+
+            if (user.EmailConfirmed)
+                return ServiceResult.FailureResult("Email already confirmed");
 
             var otp = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
             await _emailService.SendEmailAsync(user.Email, "Resend OTP", otp);
+
+            return ServiceResult.SuccessResult("OTP resent successfully");
         }
 
         public async Task<AuthDto> GetTokenAsync(TokenRequestDto tokenRequestDto)
