@@ -22,5 +22,6 @@ namespace Sireen.Domain.Interfaces.Services
         Task<AppUser> GetByEmailAsync(string email);
         Task<ServiceResult> ConfirmEmailOtpAsync(string email, string otp);
         Task<ServiceResult> ResendOtpAsync(string email);
+        Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordRequest dto);
     }
 }

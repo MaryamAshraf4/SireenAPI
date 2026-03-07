@@ -77,10 +77,7 @@ namespace Sireen.Infrastructure.Services
             if (user == null)
                 return ServiceResult.FailureResult("User not found");
 
-            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user,
-                "Email",
-                otp);
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", otp);
 
             if (!isValid)
                 return ServiceResult.FailureResult("Invalid OTP");
@@ -88,7 +85,25 @@ namespace Sireen.Infrastructure.Services
             user.EmailConfirmed = true;
             await _userManager.UpdateAsync(user);
 
-            return ServiceResult.SuccessResult("Email confirmed successfully");
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var userDto = new AuthDto
+            {
+                Email = user.Email,
+                IsAuthenticated = true,
+                Roles = roles.ToList(),
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiration = refreshToken.ExpiresOn
+            };
+
+            return ServiceResult.SuccessResult("Email confirmed successfully", userDto);
         }
 
         public async Task<ServiceResult> ResendOtpAsync(string email)
@@ -282,6 +297,26 @@ namespace Sireen.Infrastructure.Services
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
+        }
+
+        public async Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordRequest dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return ServiceResult.FailureResult("User not found");
+
+            if (dto.NewPassword != dto.ConfirmNewPassword)
+                return ServiceResult.FailureResult("Passwords do not match");
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return ServiceResult.FailureResult(errors);
+            }
+
+            return ServiceResult.SuccessResult("Password changed successfully");
         }
 
         private RefreshToken GenerateRefreshToken() 
