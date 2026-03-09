@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.AppUsers;
@@ -19,6 +20,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost("Register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(CreateAppUserDto userDto) 
         {
             if(!ModelState.IsValid)
@@ -31,7 +33,9 @@ namespace Sireen.API.Controllers
 
             return Ok(result);
         }
+
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(TokenRequestDto userDto) 
         {
             if(!ModelState.IsValid)
@@ -49,6 +53,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("refreshToken")]
+        [Authorize]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -64,6 +69,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost("revokeToken")]
+        [Authorize]
         public async Task<IActionResult> RevokeToken(RevokeTokenDto revokeToken)
         {
             var token = revokeToken.Token ?? Request.Cookies["refreshToken"];
@@ -81,6 +87,7 @@ namespace Sireen.API.Controllers
 
 
         [HttpPost("confirmEmailOtp")]
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmailOtp(ConfirmOtpDto dto)
         {
             var result = await _userService.ConfirmEmailOtpAsync(dto.Email, dto.Otp);
@@ -92,6 +99,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost("resendOtp")]
+        [AllowAnonymous]
         public async Task<IActionResult> ResendOtp([FromBody] ResendOtpRequest request)
         {
             var result = await _userService.ResendOtpAsync(request.Email);
@@ -103,6 +111,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -119,6 +128,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateAppUserDto userDto)
         {
             if (!ModelState.IsValid)
@@ -139,6 +149,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpDelete("delete")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -159,6 +170,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost("ChangePassword")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

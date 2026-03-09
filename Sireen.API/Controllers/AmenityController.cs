@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Amenities;
 using Sireen.Application.DTOs.Hotels;
@@ -8,6 +9,7 @@ namespace Sireen.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager")]
     public class AmenityController : ControllerBase
     {
         private readonly IAmenityService _amenityService;
@@ -17,6 +19,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllAmenities() 
         {
             var result = await _amenityService.GetAllAsync();
@@ -25,6 +28,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAmenityById(int id) 
         {
             var amenity = await _amenityService.GetByIdAsync(id);

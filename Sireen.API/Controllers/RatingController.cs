@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Ratings;
 using Sireen.Application.Interfaces.Services;
@@ -18,6 +19,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("average/{hotelId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAverageRatingByHotel(int hotelId) 
         {
             var result = await _ratingService.GetAverageRatingByHotelAsync(hotelId);
@@ -26,6 +28,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("hotel/{hotelId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetRatingsByHotel(int hotelId) 
         {
             var result = await _ratingService.GetRatingsByHotelAsync(hotelId);
@@ -34,6 +37,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetRatingsByUser")]
+        [Authorize]
         public async Task<IActionResult> GetRatingsByUser()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -47,6 +51,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddRating([FromBody]CreateRatingDto ratingDto)
         {
             if(!ModelState.IsValid)
