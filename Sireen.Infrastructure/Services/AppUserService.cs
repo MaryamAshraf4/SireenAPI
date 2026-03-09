@@ -150,22 +150,13 @@ namespace Sireen.Infrastructure.Services
             authDto.Username = user.UserName;
             authDto.Roles = roles.ToList();
 
-            if(user.RefreshTokens.Any(r => r.IsActive))
-            {
-                var activeRefreshToken = user.RefreshTokens.First(r => r.IsActive);
-                authDto.RefreshToken = activeRefreshToken.Token;
-                authDto.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
-            }
-            else
-            {
-                var refreshToken = GenerateRefreshToken();
-                authDto.RefreshToken = refreshToken.Token;
-                authDto.RefreshTokenExpiration = refreshToken.ExpiresOn;
-                user.RefreshTokens.Add(refreshToken);
-                await _userManager.UpdateAsync(user);
-            }
+            var refreshToken = GenerateRefreshToken();
+            authDto.RefreshToken = refreshToken.Token;
+            authDto.RefreshTokenExpiration = refreshToken.ExpiresOn;
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
 
-           return authDto;
+            return authDto;
         }
 
         public async Task<AuthDto> RefreshTokenAsync(string token)

@@ -23,6 +23,6 @@ namespace Sireen.Domain.Models
         public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
         public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-        public ICollection<RefreshToken>? RefreshTokens { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }
