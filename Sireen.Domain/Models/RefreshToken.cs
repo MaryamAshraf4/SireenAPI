@@ -11,6 +11,7 @@ namespace Sireen.Domain.Models
     public class RefreshToken
     {
         public string Token { get; set; }
+        public bool IsRememberMe { get; set; }
         public DateTime ExpiresOn { get; set; }
         public bool IsExpired => DateTime.UtcNow >= ExpiresOn;
         public DateTime CreatedOn { get; set; }

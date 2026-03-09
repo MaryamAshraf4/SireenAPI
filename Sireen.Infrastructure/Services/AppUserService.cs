@@ -85,11 +85,11 @@ namespace Sireen.Infrastructure.Services
             user.EmailConfirmed = true;
             await _userManager.UpdateAsync(user);
 
-            var jwtSecurityToken = await CreateJwtToken(user);
+            var jwtSecurityToken = await CreateJwtToken(user, false);
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var refreshToken = GenerateRefreshToken();
+            var refreshToken = GenerateRefreshToken(false);
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
 
@@ -140,7 +140,7 @@ namespace Sireen.Infrastructure.Services
                 return authDto;
             }
 
-            var jwtSecurityToken = await CreateJwtToken(user);
+            var jwtSecurityToken = await CreateJwtToken(user, tokenRequestDto.RememberMe);
             var roles = await _userManager.GetRolesAsync(user);
 
             authDto.IsAuthenticated = true;
@@ -150,7 +150,7 @@ namespace Sireen.Infrastructure.Services
             authDto.Username = user.UserName;
             authDto.Roles = roles.ToList();
 
-            var refreshToken = GenerateRefreshToken();
+            var refreshToken = GenerateRefreshToken(tokenRequestDto.RememberMe);
             authDto.RefreshToken = refreshToken.Token;
             authDto.RefreshTokenExpiration = refreshToken.ExpiresOn;
             user.RefreshTokens.Add(refreshToken);
@@ -163,7 +163,7 @@ namespace Sireen.Infrastructure.Services
         {
             var authDto = new AuthDto();
 
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+            var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
             {
@@ -181,11 +181,11 @@ namespace Sireen.Infrastructure.Services
 
             refreshToken.RevokedOn = DateTime.UtcNow;
 
-            var newRefreshToken = GenerateRefreshToken();
+            var newRefreshToken = GenerateRefreshToken(refreshToken.IsRememberMe);
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
 
-            var jwtToken = await CreateJwtToken(user);
+            var jwtToken = await CreateJwtToken(user, refreshToken.IsRememberMe);
             authDto.IsAuthenticated = true;
             authDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             authDto.Email = user.Email;
@@ -240,7 +240,7 @@ namespace Sireen.Infrastructure.Services
 
         public async Task<bool> RevokeTokenAsync(string token)
         {
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+            var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
                 return false;
@@ -258,7 +258,7 @@ namespace Sireen.Infrastructure.Services
         }
 
 
-        private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
+        private async Task<JwtSecurityToken> CreateJwtToken(AppUser user, bool rememberMe = false)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -284,7 +284,7 @@ namespace Sireen.Infrastructure.Services
                 issuer: _jwt.Issuer,
                 audience: _jwt.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(_jwt.TokenExpirationInDays),
+                expires: DateTime.Now.AddMinutes(rememberMe ? _jwt.RememberMeTokenExpirationInMinutes : _jwt.TokenExpirationInMinutes),
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
@@ -310,18 +310,22 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Password changed successfully");
         }
 
-        private RefreshToken GenerateRefreshToken() 
+        private RefreshToken GenerateRefreshToken(bool rememberMe = false) 
         {
             var randomNumber = new byte[32];
 
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(randomNumber);
+
+                var expiratiOnDays = rememberMe ? _jwt.RememberMeRefreshTokenExpirationInDays : _jwt.RefreshTokenExpirationInDays;
+
                 return new RefreshToken
                 {
                     Token = Convert.ToBase64String(randomNumber),
-                    ExpiresOn = DateTime.Now.AddDays(10),
-                    CreatedOn = DateTime.Now
+                    ExpiresOn = DateTime.UtcNow.AddDays(expiratiOnDays),
+                    CreatedOn = DateTime.UtcNow,
+                    IsRememberMe = rememberMe,
                 };
             }
         }
