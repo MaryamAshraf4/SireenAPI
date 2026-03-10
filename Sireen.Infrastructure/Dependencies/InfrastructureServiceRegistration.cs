@@ -5,6 +5,7 @@ using Sireen.Application.Interfaces.Services;
 using Sireen.Domain.Interfaces.Services;
 using Sireen.Domain.Interfaces.UnitOfWork;
 using Sireen.Infrastructure.Persistence;
+using Sireen.Infrastructure.Seeders;
 using Sireen.Infrastructure.Services;
 using Sireen.Infrastructure.UnitofWork;
 using System;
@@ -30,6 +31,8 @@ namespace Sireen.Infrastructure.Dependencies
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<RoleSeeder>();
+            services.AddScoped<DefaultAdminSeeder>();
             return services;
         }
     }

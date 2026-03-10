@@ -16,7 +16,7 @@ namespace Sireen.Infrastructure.Persistence.Configurations
             builder.Property(u => u.FullName).HasMaxLength(200).IsRequired();
             builder.Property(u => u.IdentityNumber).HasMaxLength(50).IsRequired();
             builder.Property(u => u.Nationality).HasMaxLength(100).IsRequired();
-            builder.Property(u => u.PhoneNumber).HasMaxLength(20).IsRequired();
+            builder.Property(u => u.PhoneNumber).HasMaxLength(20);
             builder.Property(u => u.Email).IsRequired();
             builder.HasQueryFilter(u => !u.IsDeleted);
             builder.Property(u => u.IdentityType).HasConversion<string>().IsRequired();

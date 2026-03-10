@@ -12,6 +12,7 @@ using Sireen.Domain.Models;
 using Sireen.Infrastructure.Configurations;
 using Sireen.Infrastructure.Dependencies;
 using Sireen.Infrastructure.Persistence;
+using Sireen.Infrastructure.Seeders;
 using System.Text;
 
 string txt = "DevCors";
@@ -77,14 +78,28 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()); });
 
-
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
+    await roleSeeder.SeedRolesAsync();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<DefaultAdminSeeder>();
+    await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
+
+    app.UseSwagger(c => c.SerializeAsV2 = true);
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    });
 }
 
 app.UseCors(txt);
