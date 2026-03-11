@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Sireen.Application.DTOs.Payments;
 using Sireen.Application.Helpers;
 using Sireen.Application.Interfaces.Services;
@@ -17,10 +18,12 @@ namespace Sireen.Infrastructure.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
         public async Task<ServiceResult> AddAsync(CreatePaymentDto paymentDto, int bookingId)
         {
@@ -65,12 +68,20 @@ namespace Sireen.Infrastructure.Services
             return _mapper.Map<IEnumerable<PaymentDto>>(payments);
         }
 
-        public async Task<ServiceResult> UpdatePaymentStatusAsync(int paymentId, UpdatePaymentManagerDto paymentDto)
+        public async Task<ServiceResult> UpdatePaymentStatusAsync(int paymentId, UpdatePaymentManagerDto paymentDto, string managerId)
         {
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
             var payment = await _unitOfWork.Payments.GetByIdAsync(paymentId);
 
             if (payment == null)
                 return ServiceResult.FailureResult("Payment not found.");
+
+            if (!user.Hotels.Any(h => h.Id == payment.Booking.Room.HotelId))
+                return ServiceResult.FailureResult("You cannot update payment status for this booking.");
 
             payment.PaymentStatus = paymentDto.PaymentStatus;
 

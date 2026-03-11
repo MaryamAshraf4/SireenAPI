@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Payments;
@@ -19,6 +20,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetPaymentById(int id)
         {
             var result = await _paymentService.GetByIdAsync(id);
@@ -27,6 +29,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("Booking/{bookingId}")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetPaymentByBookingId(int bookingId)
         {
             var result = await _paymentService.GetByBookingIdAsync(bookingId);
@@ -35,6 +38,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetPaymentByUserId")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetPaymentByUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -48,6 +52,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("Hotel/{hotelId}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetPaymentsByHotelAndDate(int hotelId, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             var result = await _paymentService.GetPaymentsByHotelAndDateAsync(hotelId, startDate, endDate);
@@ -56,6 +61,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddPayment(CreatePaymentDto paymentDto, [FromQuery] int bookingId)
         {
             if (!ModelState.IsValid)
@@ -67,12 +73,18 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPut("{paymentId}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateStatus(int paymentId, UpdatePaymentManagerDto paymentDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _paymentService.UpdatePaymentStatusAsync(paymentId, paymentDto);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _paymentService.UpdatePaymentStatusAsync(paymentId, paymentDto, managerId);
 
             if (!result.Success)
                 return NotFound(result.Message);

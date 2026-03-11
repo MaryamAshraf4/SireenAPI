@@ -1,6 +1,4 @@
-﻿using Sireen.Application.DTOs.Amenities;
-using Sireen.Application.DTOs.Payments;
-using Sireen.Application.DTOs.Ratings;
+﻿using Sireen.Application.DTOs.Payments;
 using Sireen.Application.Helpers;
 using Sireen.Domain.Models;
 using System;
@@ -17,7 +15,7 @@ namespace Sireen.Application.Interfaces.Services
         Task<IEnumerable<PaymentDto>> GetByUserIdAsync(string userId);
         Task<IEnumerable<PaymentDto>> GetByBookingIdAsync(int bookingId);
         Task<ServiceResult> AddAsync(CreatePaymentDto paymentDto, int bookingId);
-        Task<ServiceResult> UpdatePaymentStatusAsync(int paymentId, UpdatePaymentManagerDto paymentDto);
+        Task<ServiceResult> UpdatePaymentStatusAsync(int paymentId, UpdatePaymentManagerDto paymentDto, string managerId);
         Task<IEnumerable<PaymentDto>> GetPaymentsByHotelAndDateAsync(int hotelId, DateTime? startDate, DateTime? endDate);
     }
 }
