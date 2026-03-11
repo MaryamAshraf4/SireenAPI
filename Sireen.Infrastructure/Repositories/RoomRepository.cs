@@ -22,7 +22,7 @@ namespace Sireen.Infrastructure.Repositories
         public override async Task<Room?> GetByIdAsync(int id)
         {
             return await _context.Rooms.Include(r => r.RoomImages)
-                .Include(r => r.Amenities).FirstOrDefaultAsync(r => r.ID == id);
+                .Include(r => r.Amenities).Include(r => r.Hotel).FirstOrDefaultAsync(r => r.ID == id);
         }
 
         public async Task<IEnumerable<Room>> GetRoomsByHotelIdAsync(int hotelId)

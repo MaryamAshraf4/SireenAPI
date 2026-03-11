@@ -257,6 +257,29 @@ namespace Sireen.Infrastructure.Services
             return true;
         }
 
+        public List<AppUser> SearchUsers(string query)
+        {
+            return _userManager.Users
+                .Where(u => u.UserName.Contains(query) || u.Email.Contains(query))
+                .ToList();
+        }
+
+        public async Task<bool> ChangeUserRoleAsync(string userId, string newRole)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return false;
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            var result = await _userManager.AddToRoleAsync(user, newRole);
+
+            return result.Succeeded;
+        }
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user, bool rememberMe = false)
         {

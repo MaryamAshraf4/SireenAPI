@@ -169,7 +169,7 @@ namespace Sireen.API.Controllers
             return Ok(result.Message);
         }
 
-        [HttpPost("ChangePassword")]
+        [HttpPost("changePassword")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
@@ -184,6 +184,31 @@ namespace Sireen.API.Controllers
                 return BadRequest(result.Message);
 
             return Ok(result.Message);
+        }
+
+        [HttpGet("search")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult SearchUsers([FromQuery] string query)
+        {
+            var users = _userService.SearchUsers(query);
+            var result = users.Select(u => new {
+                u.Id,
+                u.UserName,
+                u.Email
+            });
+            return Ok(result);
+        }
+
+        [HttpPut("changeRole")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeRole(ChangeRoleDto dto)
+        {
+            var result = await _userService.ChangeUserRoleAsync(dto.UserId, dto.NewRole);
+
+            if (!result)
+                return BadRequest("Failed to change role");
+
+            return Ok("Role updated successfully");
         }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
