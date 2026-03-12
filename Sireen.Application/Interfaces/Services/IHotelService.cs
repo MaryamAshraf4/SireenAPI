@@ -15,7 +15,7 @@ namespace Sireen.Application.Interfaces.Services
         Task<DisplayHotelDto?> GetByIdAsync(int id);
         Task<IEnumerable<HotelDto>> SearchAsync(string? name, string? location);
         Task<IEnumerable<HotelDto>> GetHotelsByManagerIdAsync(string managerId);
-        Task<ServiceResult> SoftDeleteAsync(int id);
-        Task<ServiceResult> UpdateHotelAsync(int hotelId, UpdateHotelDto hotelDto);
+        Task<ServiceResult> SoftDeleteAsync(int id, string managerId);
+        Task<ServiceResult> UpdateHotelAsync(int hotelId, UpdateHotelDto hotelDto, string managerId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Rooms;
@@ -19,6 +20,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllBookings()
         {
             var result = await _bookingService.GetAllAsync();
@@ -27,6 +29,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetActive")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetActiveBookingsAsync()
         {
             var result = await _bookingService.GetActiveBookingsAsync();
@@ -35,6 +38,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetStatus/{status}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetByStatus(BookingStatus status)
         {
             var result = await _bookingService.GetByStatusAsync(status);
@@ -43,6 +47,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("Client")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetByUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -56,6 +61,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("Room/{roomId}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetByRoomIdAsync(int roomId)
         {
             var result = await _bookingService.GetByRoomIdAsync(roomId);
@@ -64,6 +70,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetBookingById(int id)
         {
             var room = await _bookingService.GetByIdAsync(id);
@@ -75,6 +82,7 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddBooking(CreateBookingDto bookingDto)
         {
             if (!ModelState.IsValid)
@@ -91,12 +99,18 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateManagerBookingDto bookingDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _bookingService.UpdateBookingAsync(id, bookingDto);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.UpdateBookingAsync(id, bookingDto, managerId);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -106,12 +120,18 @@ namespace Sireen.API.Controllers
         }
 
         [HttpPut("status/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] BookingStatus bookingStatus)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _bookingService.UpdateStatusAsync(id, bookingStatus);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.UpdateStatusAsync(id, bookingStatus, managerId);
 
             if (!result.Success)
                 return NotFound(result.Message);
@@ -121,9 +141,15 @@ namespace Sireen.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
-            var result = await _bookingService.SoftDeleteAsync(id);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.SoftDeleteAsync(id, managerId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

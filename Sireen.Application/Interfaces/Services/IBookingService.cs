@@ -14,13 +14,13 @@ namespace Sireen.Application.Interfaces.Services
     public interface IBookingService
     {
         Task<ManagerBookingDto?> GetByIdAsync(int id);
-        Task<ServiceResult> SoftDeleteAsync(int id);
+        Task<ServiceResult> SoftDeleteAsync(int id, string managerId);
         Task<IEnumerable<ManagerBookingDto>> GetAllAsync();
         Task<IEnumerable<ManagerBookingDto>> GetActiveBookingsAsync();
         Task<IEnumerable<ManagerBookingDto>> GetByRoomIdAsync(int roomId);
         Task<IEnumerable<ClientBookingDto>> GetByUserIdAsync(string userId);
-        Task<ServiceResult> UpdateStatusAsync(int bookingId, BookingStatus status);
-        Task<ServiceResult> UpdateBookingAsync(int bookingId, UpdateManagerBookingDto bookingDto);
+        Task<ServiceResult> UpdateStatusAsync(int bookingId, BookingStatus status, string managerId);
+        Task<ServiceResult> UpdateBookingAsync(int bookingId, UpdateManagerBookingDto bookingDto, string managerId);
         Task<IEnumerable<ClientBookingDto>> GetByStatusAsync(BookingStatus status);
         Task<ServiceResult> AddAsync(CreateBookingDto bookingDto, string clientId);
     }

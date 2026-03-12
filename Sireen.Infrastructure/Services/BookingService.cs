@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Sireen.Application.DTOs.AppUsers;
 using Sireen.Application.DTOs.Bookings;
 using Sireen.Application.DTOs.Payments;
@@ -20,10 +21,12 @@ namespace Sireen.Infrastructure.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public BookingService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<ServiceResult> AddAsync(CreateBookingDto bookingDto, string clientId)
@@ -84,7 +87,7 @@ namespace Sireen.Infrastructure.Services
             return _mapper.Map<IEnumerable<ClientBookingDto>>(bookings);
         }
 
-        public async Task<ServiceResult> SoftDeleteAsync(int id)
+        public async Task<ServiceResult> SoftDeleteAsync(int id, string managerId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
             if (booking == null)
@@ -92,6 +95,14 @@ namespace Sireen.Infrastructure.Services
 
             if (booking.IsDeleted)
                 return ServiceResult.FailureResult("Booking already deleted.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == booking.Room.Hotel.Id))
+                return ServiceResult.FailureResult("You cannot delete this booking.");
 
             booking.IsDeleted = true;
             _unitOfWork.Bookings.Update(booking);
@@ -101,12 +112,20 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Booking deleted successfully.");
         }
 
-        public async Task<ServiceResult> UpdateBookingAsync(int bookingId, UpdateManagerBookingDto bookingDto)
+        public async Task<ServiceResult> UpdateBookingAsync(int bookingId, UpdateManagerBookingDto bookingDto, string managerId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
 
             if (booking == null)
                 return ServiceResult.FailureResult("Booking not found.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == booking.Room.Hotel.Id))
+                return ServiceResult.FailureResult("You cannot update this booking.");
 
             _mapper.Map(bookingDto, booking);
 
@@ -116,12 +135,20 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Booking updated successfully");
         }
 
-        public async Task<ServiceResult> UpdateStatusAsync(int bookingId, BookingStatus status)
+        public async Task<ServiceResult> UpdateStatusAsync(int bookingId, BookingStatus status, string managerId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
 
             if (booking == null)
                 return ServiceResult.FailureResult("Booking not found.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == booking.Room.Hotel.Id))
+                return ServiceResult.FailureResult("You cannot update status for this booking.");
 
             booking.BookingStatus = status;
 

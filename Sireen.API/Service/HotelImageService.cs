@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Sireen.API.DTOs.HotelImages;
 using Sireen.API.Interfaces.IService;
 using Sireen.Application.DTOs.HotelImages;
@@ -15,15 +16,30 @@ namespace Sireen.API.Service
         private readonly IImageService _imageService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
 
-        public HotelImageService(IImageService imageService, IUnitOfWork unitOfWork, IMapper mapper)
+        public HotelImageService(IImageService imageService, IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _imageService = imageService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
-        public async Task<string> AddHotelImage(HotelImageUploadDto dto)
+        public async Task<string> AddHotelImage(HotelImageUploadDto dto, string managerId)
         {
+            var hotel = await _unitOfWork.Hotels.GetByIdAsync(dto.HotelId);
+
+            if (hotel == null || hotel.IsDeleted)
+                return "Hotel not found.";
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return "User not found.";
+
+            if (!user.Hotels.Any(h => h.Id == hotel.Id))
+                return "You cannot add image to this hotel.";
+
             string imagePath = await _imageService.UploadImageAsync(dto.Image, "HotelImages");
 
             var hotelImage = _mapper.Map<HotelImage>(dto);
@@ -42,7 +58,7 @@ namespace Sireen.API.Service
             return _mapper.Map<IEnumerable<HotelImageDto>>(hotelImages);
         }
 
-        public async Task<ServiceResult> SoftDeleteAsync(int hotelImageId)
+        public async Task<ServiceResult> SoftDeleteAsync(int hotelImageId, string managerId)
         {
             var hotelImage = await _unitOfWork.HotelImages.GetByIdAsync(hotelImageId);
             if (hotelImage == null)
@@ -50,6 +66,19 @@ namespace Sireen.API.Service
 
             if (hotelImage.IsDeleted)
                 return ServiceResult.FailureResult("Hotel Image already deleted.");
+
+            var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelImage.HotelId);
+
+            if (hotel == null || hotel.IsDeleted)
+                return ServiceResult.FailureResult("Hotel not found.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == hotel.Id))
+                return ServiceResult.FailureResult("You cannot delete image from this hotel.");
 
             hotelImage.IsDeleted = true;
             hotelImage.UpdatedAt = DateTime.UtcNow;

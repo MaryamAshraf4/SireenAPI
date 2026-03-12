@@ -7,8 +7,8 @@ namespace Sireen.API.Interfaces.IService
 {
     public interface IHotelImageService
     {
-        Task<string> AddHotelImage(HotelImageUploadDto dto);
+        Task<string> AddHotelImage(HotelImageUploadDto dto, string managerId);
         Task<IEnumerable<HotelImageDto>> GetByHotelIdAsync(int hotelId);
-        Task<ServiceResult> SoftDeleteAsync(int hotelImageId);
+        Task<ServiceResult> SoftDeleteAsync(int hotelImageId, string managerId);
     }
 }

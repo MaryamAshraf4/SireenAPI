@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Sireen.Application.DTOs.Hotels;
 using Sireen.Application.DTOs.Rooms;
 using Sireen.Application.Helpers;
@@ -17,10 +18,12 @@ namespace Sireen.Infrastructure.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public HotelService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        public HotelService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<ServiceResult> AddAsync(CreateHotelDto hotelDto, string managerId)
@@ -65,11 +68,19 @@ namespace Sireen.Infrastructure.Services
             return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
 
-        public async Task<ServiceResult> SoftDeleteAsync(int id)
+        public async Task<ServiceResult> SoftDeleteAsync(int id, string managerId)
         {
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
             if (hotel == null)
                 return ServiceResult.FailureResult("Hotel not found.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == hotel.Id))
+                return ServiceResult.FailureResult("You cannot delete this hotel.");
 
             if (hotel.IsDeleted)
                 return ServiceResult.FailureResult("Hotel already deleted.");
@@ -83,12 +94,20 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Hotel deleted successfully.");
         }
 
-        public async Task<ServiceResult> UpdateHotelAsync(int hotelId, UpdateHotelDto hotelDto)
+        public async Task<ServiceResult> UpdateHotelAsync(int hotelId, UpdateHotelDto hotelDto, string managerId)
         {
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
 
             if (hotel == null)
                 return ServiceResult.FailureResult("Hotel not found.");
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!user.Hotels.Any(h => h.Id == hotel.Id))
+                return ServiceResult.FailureResult("You cannot update this hotel.");
 
             _mapper.Map(hotelDto, hotel);
             hotel.UpdatedAt = DateTime.UtcNow;
