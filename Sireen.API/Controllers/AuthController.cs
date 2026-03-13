@@ -199,16 +199,16 @@ namespace Sireen.API.Controllers
             return Ok(result);
         }
 
-        [HttpPut("changeRole")]
+        [HttpPost("addRole")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ChangeRole(ChangeRoleDto dto)
+        public async Task<IActionResult> AddRole([FromQuery] string userId, [FromQuery] string role)
         {
-            var result = await _userService.ChangeUserRoleAsync(dto.UserId, dto.NewRole);
+            var result = await _userService.AddRoleToUserAsync(userId, role);
 
-            if (!result)
-                return BadRequest("Failed to change role");
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            return Ok("Role updated successfully");
+            return Ok();
         }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)

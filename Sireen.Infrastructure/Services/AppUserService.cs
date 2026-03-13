@@ -28,12 +28,14 @@ namespace Sireen.Infrastructure.Services
         private readonly IMapper _mapper;
         private readonly JwtSettings _jwt;
         private readonly IEmailService _emailService;
-        public AppUserService(UserManager<AppUser> userManager, IMapper mapper, IOptions<JwtSettings> jwt, IEmailService emailService)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public AppUserService(UserManager<AppUser> userManager, IMapper mapper, IOptions<JwtSettings> jwt, IEmailService emailService, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwt = jwt.Value;
             _emailService = emailService;
+            _roleManager = roleManager;
         }
 
         public async Task<ServiceResult> RegisterUserAsync(CreateAppUserDto userDto)
@@ -264,21 +266,27 @@ namespace Sireen.Infrastructure.Services
                 .ToList();
         }
 
-        public async Task<bool> ChangeUserRoleAsync(string userId, string newRole)
+        public async Task<ServiceResult> AddRoleToUserAsync(string userId, string roleToAdd)
         {
             var user = await _userManager.FindByIdAsync(userId);
-
             if (user == null)
-                return false;
+                return ServiceResult.FailureResult("User not found.");
+
+            if (!await _roleManager.RoleExistsAsync(roleToAdd))
+                return ServiceResult.FailureResult("Role does not exist.");
 
             var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Contains(roleToAdd))
+                return ServiceResult.FailureResult($"User already has the role '{roleToAdd}'.");
 
-            if (currentRoles.Any())
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            var result = await _userManager.AddToRoleAsync(user, roleToAdd);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return ServiceResult.FailureResult("Failed to add role: " + errors);
+            }
 
-            var result = await _userManager.AddToRoleAsync(user, newRole);
-
-            return result.Succeeded;
+            return ServiceResult.SuccessResult($"Role '{roleToAdd}' added successfully.");
         }
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user, bool rememberMe = false)

@@ -23,7 +23,7 @@ namespace Sireen.Domain.Interfaces.Services
         Task<ServiceResult> ConfirmEmailOtpAsync(string email, string otp);
         Task<ServiceResult> ResendOtpAsync(string email);
         Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordRequest dto);
-        Task<bool> ChangeUserRoleAsync(string userId, string newRole);
+        Task<ServiceResult> AddRoleToUserAsync(string userId, string roleToAdd);
         public List<AppUser> SearchUsers(string query);
     }
 }
