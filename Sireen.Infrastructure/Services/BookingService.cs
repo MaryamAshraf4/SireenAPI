@@ -45,18 +45,32 @@ namespace Sireen.Infrastructure.Services
             return ServiceResult.SuccessResult("Booking created successfully.");
         }
 
-        public async Task<IEnumerable<ManagerBookingDto>> GetActiveBookingsAsync()
+        public async Task<IEnumerable<ManagerBookingDto>> GetActiveBookingsAsync(string managerId)
         {
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return Enumerable.Empty<ManagerBookingDto>();
+
             var bookings = await _unitOfWork.Bookings.GetActiveBookingsAsync();
 
-            return _mapper.Map<IEnumerable<ManagerBookingDto>>(bookings);
+            var managerBookings = bookings.Where(b => user.Hotels.Any(h => h.Id == b.Room.HotelId));
+
+            return _mapper.Map<IEnumerable<ManagerBookingDto>>(managerBookings);
         }
 
-        public async Task<IEnumerable<ManagerBookingDto>> GetAllAsync()
+        public async Task<IEnumerable<ManagerBookingDto>> GetAllAsync(string managerId)
         {
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return Enumerable.Empty<ManagerBookingDto>();
+
             var bookings = await _unitOfWork.Bookings.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<ManagerBookingDto>>(bookings);
+            var managerBookings = bookings.Where(b => user.Hotels.Any(h => h.Id == b.Room.HotelId));
+
+            return _mapper.Map<IEnumerable<ManagerBookingDto>>(managerBookings);
         }
 
         public async Task<ManagerBookingDto?> GetByIdAsync(int id)
@@ -66,16 +80,36 @@ namespace Sireen.Infrastructure.Services
             return _mapper.Map<ManagerBookingDto>(booking);
         }
 
-        public async Task<IEnumerable<ManagerBookingDto>> GetByRoomIdAsync(int roomId)
+        public async Task<IEnumerable<ManagerBookingDto>> GetByRoomIdAsync(int roomId, string managerId)
         {
+            var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+
+            if (room == null || room.IsDelete)
+                return Enumerable.Empty<ManagerBookingDto>();
+
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return Enumerable.Empty<ManagerBookingDto>();
+
+            if (!user.Hotels.Any(h => h.Id == room.HotelId))
+                return Enumerable.Empty<ManagerBookingDto>();
+
             var bookings = await _unitOfWork.Bookings.GetByRoomIdAsync(roomId);
 
             return _mapper.Map<IEnumerable<ManagerBookingDto>>(bookings);
         }
 
-        public async Task<IEnumerable<ClientBookingDto>> GetByStatusAsync(BookingStatus status)
+        public async Task<IEnumerable<ClientBookingDto>> GetByStatusAsync(BookingStatus status, string managerId)
         {
+            var user = await _userManager.FindByIdAsync(managerId);
+
+            if (user == null)
+                return Enumerable.Empty<ClientBookingDto>();
+
             var bookings = await _unitOfWork.Bookings.GetByStatusAsync(status);
+
+            var managerBookings = bookings.Where(b => user.Hotels.Any(h => h.Id == b.Room.HotelId));
 
             return _mapper.Map<IEnumerable<ClientBookingDto>>(bookings);
         }

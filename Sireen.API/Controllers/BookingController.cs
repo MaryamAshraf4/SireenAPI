@@ -23,7 +23,12 @@ namespace Sireen.API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllBookings()
         {
-            var result = await _bookingService.GetAllAsync();
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.GetAllAsync(managerId);
 
             return Ok(result);
         }
@@ -32,7 +37,12 @@ namespace Sireen.API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetActiveBookingsAsync()
         {
-            var result = await _bookingService.GetActiveBookingsAsync();
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.GetActiveBookingsAsync(managerId);
 
             return Ok(result);
         }
@@ -41,7 +51,12 @@ namespace Sireen.API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetByStatus(BookingStatus status)
         {
-            var result = await _bookingService.GetByStatusAsync(status);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.GetByStatusAsync(status, managerId);
 
             return Ok(result);
         }
@@ -64,7 +79,12 @@ namespace Sireen.API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetByRoomIdAsync(int roomId)
         {
-            var result = await _bookingService.GetByRoomIdAsync(roomId);
+            var managerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (managerId == null)
+                return Unauthorized("Unauthorized User");
+
+            var result = await _bookingService.GetByRoomIdAsync(roomId, managerId);
 
             return Ok(result);
         }
