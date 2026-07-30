@@ -54,21 +54,6 @@ Sireen API is a **Hotel Management System** built with **ASP.NET Core Web API**.
 * AutoMapper
 * Swagger / OpenAPI
 
-## 📁 Project Structure
-
-```text
-SireenAPI
-├── Controllers
-├── Services
-├── Repositories
-├── Data
-├── Models
-├── DTOs
-├── Mapping
-├── Helpers
-├── Middleware
-└── wwwroot
-```
 
 ## 🚀 Getting Started
 
